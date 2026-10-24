@@ -66,6 +66,16 @@ auto Program::create() -> void {
   driverSettings.audioDriverChanged();
   driverSettings.inputDriverChanged();
 
+  if(settings.emulator.hack.ppu.hd
+  && settings.emulator.hack.ppu.hdMode7.gpuSupersample
+  && !videoSupportsHdGpu()) {
+    selectFastPpuDueToDriver(presentation);
+  } else {
+    ppuRendererActive = settings.emulator.hack.ppu.hd ? 2
+      : settings.emulator.hack.ppu.fast ? 1 : 0;
+    enhancementSettings.ppuRendererChanged();
+  }
+
   if(gameQueue) load();
   if(startFullScreen && emulator->loaded()) {
     toggleVideoFullScreen();
@@ -84,6 +94,13 @@ auto Program::main() -> void {
 
   inputManager.poll();
   inputManager.pollHotkeys();
+  if(auto after = getenv("BSNES_TOGGLE_FS_AFTER")) {
+    static uint frames = 0;
+    uint want = (uint)max(1, atoi(after));
+    if(++frames == want && emulator->loaded() && !video.fullScreen()) {
+      toggleVideoFullScreen();
+    }
+  }
 
   static bool previouslyInactive = true;
   bool currentlyInactive = inactive();
@@ -103,6 +120,18 @@ auto Program::main() -> void {
 
   rewindRun();
 
+  HdTrace::advanceFrame();
+  if(auto limit = HdTrace::quitAfter(); limit && HdTrace::frame() > limit) return program.quit();
+
+  //BSNES_TIME_FRAME=1: where the wall clock goes, for measurement runs
+  static uint64 runNs = 0, loopNs = 0, lastEnd = 0;
+  bool timing = HdTrace::timing();
+  uint64 t0 = 0;
+  if(timing) {
+    t0 = chrono::nanosecond();
+    if(lastEnd) loopNs += t0 - lastEnd;
+  }
+
   if(!settings.emulator.runAhead.frames || fastForwarding || rewinding) {
     emulator->run();
   } else {
@@ -116,6 +145,17 @@ auto Program::main() -> void {
     emulator->run();
     state.setMode(serializer::Mode::Load);
     emulator->unserialize(state);
+  }
+
+  if(timing) {
+    uint64 t1 = chrono::nanosecond();
+    runNs += t1 - t0;
+    lastEnd = t1;
+    if(HdTrace::frame() % 60 == 0) {
+      fprintf(stderr, "[time] frame=%u run=%.1fms/frame outside=%.1fms/frame\n",
+        HdTrace::frame(), runNs / 1e6 / 60, loopNs / 1e6 / 60);
+      runNs = loopNs = 0;
+    }
   }
 
   if(emulatorSettings.autoSaveMemory.checked()) {

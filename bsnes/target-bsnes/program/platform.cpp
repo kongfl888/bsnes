@@ -1,4 +1,5 @@
 #include <nall/encode/bmp.hpp>
+#include <emulator/hdtrace.hpp>
 #include <heuristics/heuristics.hpp>
 #include <heuristics/heuristics.cpp>
 #include <heuristics/super-famicom.cpp>
@@ -207,24 +208,27 @@ auto Program::videoFrame(const uint16* data, uint pitch, uint width, uint height
   //this will always be the case; so we can avoid an unnecessary copy or one-frame delay here
   //if the core were to exit between a frame event, the next frame might've been only partially rendered
   screenshot.data   = data;
+  screenshot.data32 = nullptr;
   screenshot.pitch  = pitch;
   screenshot.width  = width;
   screenshot.height = height;
   screenshot.scale  = scale;
 
   pitch >>= 1;
-  if(!settings.video.overscan) {
+  if(uint crop = overscanCropRows(width, scale)) {
     uint multiplier = height / 240;
-    data += 8 * multiplier * pitch;
-    height -= 16 * multiplier;
+    data += crop * multiplier * pitch;
+    height -= crop * 2 * multiplier;
   }
 
-  uint outputWidth, outputHeight;
+  uint outputWidth = width, outputHeight = height;
   viewportSize(outputWidth, outputHeight, scale);
 
   uint filterWidth = width, filterHeight = height;
   auto filterRender = filterSelect(filterWidth, filterHeight, scale);
-  if(auto [output, length] = video.acquire(filterWidth, filterHeight); output) {
+  if(HdTrace::headless()) {
+    //measurement run: the PPU has already dumped what it needs
+  } else if(auto [output, length] = video.acquire(filterWidth, filterHeight); output) {
     filterRender(palette, output, length, (const uint16_t*)data, pitch << 1, width, height);
     video.release();
     video.output(outputWidth, outputHeight);
@@ -248,7 +252,56 @@ auto Program::videoFrame(const uint16* data, uint pitch, uint width, uint height
   }
 }
 
+auto Program::videoFrame(const uint32* data, uint pitch, uint width, uint height, uint scale) -> void {
+  screenshot.data   = nullptr;
+  screenshot.data32 = data;
+  screenshot.pitch  = pitch;
+  screenshot.width  = width;
+  screenshot.height = height;
+  screenshot.scale  = scale;
+
+  uint pixelPitch = pitch >> 2;
+  if(uint crop = overscanCropRows(width, scale)) {
+    uint multiplier = height / 240;
+    data += crop * multiplier * pixelPitch;
+    height -= crop * 2 * multiplier;
+  }
+
+  uint outputWidth = width, outputHeight = height;
+  viewportSize(outputWidth, outputHeight, scale);
+
+  if(HdTrace::headless()) {
+    //measurement run: the PPU has already dumped what it needs
+  } else if(auto [output, length] = video.acquire(width, height); output) {
+    uint dstPitch = length >> 2;
+    for(uint y : range(height)) {
+      memory::copy<uint32>(output + y * dstPitch, data + y * pixelPitch, width);
+    }
+    video.release();
+    bindGpuMode7();
+    video.output(outputWidth, outputHeight);
+  }
+
+  inputManager.frame();
+
+  if(presentation.frameAdvance.checked()) {
+    frameAdvanceLock = true;
+  }
+
+  static uint frameCounter = 0;
+  static uint64 previous, current;
+  frameCounter++;
+
+  current = chrono::timestamp();
+  if(current != previous) {
+    previous = current;
+    showFrameRate({frameCounter * (1 + emulator->frameSkip()), " FPS"});
+    frameCounter = 0;
+  }
+}
+
 auto Program::audioFrame(const double* samples, uint channels) -> void {
+  if(HdTrace::headless()) return;  //no audio device to pace against
   if(mute) {
     double silence[] = {0.0, 0.0};
     audio.output(silence);
@@ -259,6 +312,15 @@ auto Program::audioFrame(const double* samples, uint channels) -> void {
 
 auto Program::inputPoll(uint port, uint device, uint input) -> int16 {
   int16 value = 0;
+  if(int scripted = HdTrace::scriptedInput(input); scripted >= 0) {
+    if(getenv("BSNES_SCRIPT_DEBUG")) {
+      static unsigned calls = 0, presses = 0;
+      calls++; presses += scripted;
+      if((calls % 600) == 0) fprintf(stderr, "[script] f=%u calls=%u presses=%u port=%u dev=%u\n",
+        HdTrace::frame(), calls, presses, port, device);
+    }
+    return scripted;
+  }
   if(focused() || inputSettings.allowInput().checked()) {
     inputManager.poll();
     if(auto mapping = inputManager.mapping(port, device, input)) {

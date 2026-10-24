@@ -104,6 +104,20 @@ struct Interface {
 
   virtual auto runAhead() -> bool { return false; }
   virtual auto setRunAhead(bool runAhead) -> void {}
+
+  struct GpuMode7 {
+    bool active = false;
+    uint ss = 1;
+    bool overscan = false;
+    const uint16_t* vram = nullptr;      // 16384 Mode 7 words (tilemap + CHR)
+    const uint32_t* palette = nullptr;   // 256 packed colours
+    const float* lines = nullptr;
+    const uint32_t* tile0 = nullptr;
+    const uint8_t* colorWindow = nullptr;
+    uint64 mapHash = 0;
+    float luma = 1.0f;
+  };
+  virtual auto gpuMode7() const -> GpuMode7 { return {}; }
 };
 
 }

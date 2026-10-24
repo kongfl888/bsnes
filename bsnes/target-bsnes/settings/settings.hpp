@@ -14,7 +14,7 @@ struct Settings : Markup::Node {
     bool flush = false;
     string monitor = "Primary";
     string format = "Default";
-    string shader = "Blur";
+    string shader = "None";
 
     uint luminance = 100;
     uint saturation = 100;
@@ -109,15 +109,24 @@ struct Settings : Markup::Node {
       } cpu;
       struct PPU {
         bool fast = true;
+        bool hd = false;
         bool deinterlace = true;
         bool noSpriteLimit = false;
         bool noVRAMBlocking = false;
+        bool hdDeinterlace = true;
+        bool hdNoSpriteLimit = true;
+        bool hdTrueColor = true;
         struct Mode7 {
           uint scale = 1;
           bool perspective = true;
           bool supersample = false;
+          uint ssFactor = 1;
           bool mosaic = true;
-        } mode7;
+          bool gpuSupersample = false;
+          uint wsMode = 0;
+          uint widescreen = 1609;
+          uint wsbg1 = 16, wsbg2 = 16, wsbg3 = 16, wsbg4 = 16;
+        } mode7, hdMode7{5, true, true, 4, false, true};
       } ppu;
       struct DSP {
         bool fast = true;
@@ -332,8 +341,13 @@ public:
 
 struct EnhancementSettings : VerticalLayout {
   auto create() -> void;
+  auto reloadMode7Widgets() -> void;
+  auto ppuRendererChanged() -> void;
+  auto ppuRendererChange() -> void;
 
 public:
+  bool loadingMode7 = false;
+  Timer mode7Refresh;
   Label runAheadLabel{this, Size{~0, 0}, 2};
   HorizontalLayout runAheadLayout{this, Size{~0, 0}};
     RadioLabel runAhead0{&runAheadLayout, Size{0, 0}};
@@ -361,23 +375,48 @@ public:
   //
   Label ppuLabel{this, Size{~0, 0}, 2};
   HorizontalLayout ppuLayout{this, Size{~0, 0}};
-    CheckLabel fastPPU{&ppuLayout, Size{0, 0}};
-    CheckLabel deinterlace{&ppuLayout, Size{0, 0}};
-    CheckLabel noSpriteLimit{&ppuLayout, Size{0, 0}};
+    Label ppuRendererLabel{&ppuLayout, Size{0, 0}};
+    ComboButton ppuRenderer{&ppuLayout, Size{0, 0}};
+    Button ppuRendererUpdate{&ppuLayout, Size{0, 0}};
+    Label ppuRendererActiveLabel{&ppuLayout, Size{0, 0}};
+  HorizontalLayout ppuScanlineLayout{this, Size{~0, 0}};
+    CheckLabel deinterlace{&ppuScanlineLayout, Size{0, 0}};
+    CheckLabel noSpriteLimit{&ppuScanlineLayout, Size{0, 0}};
+    CheckLabel hdTrueColor{&ppuScanlineLayout, Size{0, 0}};
   //
   Label mode7Label{this, Size{~0, 0}, 2};
   HorizontalLayout mode7Layout{this, Size{~0, 0}};
     Label mode7ScaleLabel{&mode7Layout, Size{0, 0}};
     ComboButton mode7Scale{&mode7Layout, Size{0, 0}};
+    Label mode7SamplerLabel{&mode7Layout, Size{0, 0}};
+    ComboButton mode7Sampler{&mode7Layout, Size{0, 0}};
+    Label mode7SsFactorLabel{&mode7Layout, Size{0, 0}};
+    ComboButton mode7SsFactor{&mode7Layout, Size{0, 0}};
     CheckLabel mode7Perspective{&mode7Layout, Size{0, 0}};
     CheckLabel mode7Supersample{&mode7Layout, Size{0, 0}};
     CheckLabel mode7Mosaic{&mode7Layout, Size{0, 0}};
+  HorizontalLayout mode7WsLayout{this, Size{~0, 0}};
+    Label mode7WsModeLabel{&mode7WsLayout, Size{0, 0}};
+    ComboButton mode7WsMode{&mode7WsLayout, Size{0, 0}};
+    Label mode7WsAspectLabel{&mode7WsLayout, Size{0, 0}};
+    ComboButton mode7WsAspect{&mode7WsLayout, Size{0, 0}};
+  HorizontalLayout mode7WsBgLayout{this, Size{~0, 0}};
+    Label mode7WsBg1Label{&mode7WsBgLayout, Size{0, 0}};
+    ComboButton mode7WsBg1{&mode7WsBgLayout, Size{0, 0}};
+    Label mode7WsBg2Label{&mode7WsBgLayout, Size{0, 0}};
+    ComboButton mode7WsBg2{&mode7WsBgLayout, Size{0, 0}};
+    Label mode7WsBg3Label{&mode7WsBgLayout, Size{0, 0}};
+    ComboButton mode7WsBg3{&mode7WsBgLayout, Size{0, 0}};
+    Label mode7WsBg4Label{&mode7WsBgLayout, Size{0, 0}};
+    ComboButton mode7WsBg4{&mode7WsBgLayout, Size{0, 0}};
   //
+  Canvas dspSpacer{this, Size{~0, 1}};
   Label dspLabel{this, Size{~0, 0}, 2};
   HorizontalLayout dspLayout{this, Size{~0, 0}};
     CheckLabel fastDSP{&dspLayout, Size{0, 0}};
     CheckLabel cubicInterpolation{&dspLayout, Size{0, 0}};
   //
+  Canvas coprocessorHeaderSpacer{this, Size{~0, 1}};
   Label coprocessorLabel{this, Size{~0, 0}, 2};
   HorizontalLayout coprocessorLayout{this, Size{~0, 0}};
     CheckLabel coprocessorDelayedSyncOption{&coprocessorLayout, Size{0, 0}};

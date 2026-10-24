@@ -1,5 +1,6 @@
 #if defined(DISPLAY_XORG)
   #include <GL/gl.h>
+  #include <GL/glext.h>
   #include <GL/glx.h>
   #ifndef glGetProcAddress
     #define glGetProcAddress(name) (*glXGetProcAddress)((const GLubyte*)(name))
@@ -91,6 +92,35 @@ struct OpenGL : OpenGLProgram {
   };
   set<Setting> settings;
   bool initialized = false;
+
+  auto setMode7Gpu(bool enable, uint ss, float lineOrigin, const uint16_t* vram, const uint32_t* palette, const uint32_t* tile0, const float* lines, const uint8_t* colorWindow, uint64_t mapHash = 0, float luma = 1.0f) -> void;
+  auto outputMode7() -> bool;
+  auto uploadMode7VramPalette() -> void;
+  auto rebuildMode7Map() -> void;
+  GLuint mode7Program = 0;
+  GLuint mode7Vertex = 0;
+  GLuint mode7Fragment = 0;
+  GLuint mode7MapProgram = 0;
+  GLuint mode7MapVertex = 0;
+  GLuint mode7MapFragment = 0;
+  GLuint mode7MapTex = 0;
+  GLuint mode7MapFbo = 0;
+  GLuint mode7VramTex = 0;
+  GLuint mode7PaletteTex = 0;
+  GLuint mode7LineTex = 0;
+  GLuint mode7Tile0Tex = 0;
+  GLuint mode7WindowTex = 0;
+  bool mode7Gpu = false;
+  uint mode7Ss = 1;
+  float mode7LineOrigin = 0;
+  const uint16_t* mode7Vram = nullptr;
+  const uint32_t* mode7Palette = nullptr;
+  const float* mode7Lines = nullptr;
+  const uint32_t* mode7Tile0 = nullptr;
+  const uint8_t* mode7Window = nullptr;
+  uint64_t mode7MapHash = 0;
+  bool mode7MapReady = false;
+  float mode7Luma = 1.0f;
 };
 
 #include "texture.hpp"

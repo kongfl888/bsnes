@@ -115,11 +115,26 @@ auto Program::updateVideoPalette() -> void {
     }
   }
 
+  emulator->configure("Video/AspectCorrection", settings.video.aspectCorrection);
+  emulator->configure("Video/Overscan", settings.video.overscan);
   emulator->configure("Video/ColorEmulation", false);
+  emulator->configure("Video/Luminance", settings.video.luminance);
+  emulator->configure("Video/Saturation", settings.video.saturation);
+  emulator->configure("Video/Gamma", settings.video.gamma);
 }
 
 auto Program::updateVideoEffects() -> void {
   emulator->configure("Video/BlurEmulation", settings.video.blur);
+}
+
+auto Program::bindGpuMode7() -> void {
+  if(auto g = emulator->gpuMode7(); g.active && g.vram && g.palette && g.lines) {
+    uint crop = overscanCropRows(screenshot.width, screenshot.scale);
+    float lineOrigin = (g.overscan ? 0.0f : -7.0f) + (float)crop;
+    video.setMode7Gpu(true, g.ss, lineOrigin, g.vram, g.palette, g.tile0, g.lines, g.colorWindow, g.mapHash, g.luma);
+  } else {
+    video.setMode7Gpu(false);
+  }
 }
 
 auto Program::toggleVideoFullScreen() -> void {

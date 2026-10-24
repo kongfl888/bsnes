@@ -74,6 +74,10 @@ struct VideoGLX : VideoDriver, OpenGL {
     return true;
   }
 
+  auto setMode7Gpu(bool enable, uint ss, float lineOrigin, const uint16_t* vram, const uint32_t* palette, const uint32_t* tile0, const float* lines, const uint8_t* colorWindow, uint64_t mapHash = 0, float luma = 1.0f) -> void override {
+    OpenGL::setMode7Gpu(enable, ss, lineOrigin, vram, palette, tile0, lines, colorWindow, mapHash, luma);
+  }
+
   auto focused() -> bool override {
     return true;
   }
@@ -263,7 +267,15 @@ private:
     _doubleBuffer = value;
     _isDirect = glXIsDirect(_display, _glXContext);
 
-    return _ready = OpenGL::initialize(self.shader);
+    _ready = OpenGL::initialize(self.shader);
+    // Fullscreen recreates the GLX window. Present black immediately so the
+    // user never sees an uncomposited CPU blit (MK far grass rainbow) while
+    // the first Mode 7 frame is still in flight.
+    if(_ready) {
+      OpenGL::clear();
+      if(_doubleBuffer) glXSwapBuffers(_display, _glXWindow);
+    }
+    return _ready;
   }
 
   auto terminate() -> void {
