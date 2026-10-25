@@ -7,6 +7,8 @@
 #include "states.cpp"
 #include "movies.cpp"
 #include "rewind.cpp"
+#include "netplay-stress.cpp"
+#include "netplay.cpp"
 #include "video.cpp"
 #include "audio.cpp"
 #include "input.cpp"
@@ -44,6 +46,8 @@ auto Program::create() -> void {
   stateManager.create();
   manifestViewer.create();
 
+  netplayWindow.create();
+
   if(settings.general.crashed) {
     MessageDialog(
       "Driver crash detected. Hardware drivers have been disabled.\n"
@@ -80,6 +84,7 @@ auto Program::create() -> void {
   if(startFullScreen && emulator->loaded()) {
     toggleVideoFullScreen();
   }
+
   Application::onMain({&Program::main, this});
 }
 
@@ -89,8 +94,12 @@ auto Program::main() -> void {
 
   if(Application::modal()) {
     audio.clear();
+    //keep netplay alive during window drags/resizes, muted since frame pacing is irregular here
+    mute |= Mute::Modal;
+    netplayRun();
     return;
   }
+  mute &= ~Mute::Modal;
 
   inputManager.poll();
   inputManager.pollHotkeys();
@@ -117,6 +126,8 @@ auto Program::main() -> void {
     if(settings.emulator.runAhead.frames == 0) viewportRefresh();
     return;
   }
+
+  if(netplayRun()) return;
 
   rewindRun();
 

@@ -204,6 +204,7 @@ auto Program::load(uint id, string name, string type, vector<string> options) ->
 }
 
 auto Program::videoFrame(const uint16* data, uint pitch, uint width, uint height, uint scale) -> void {
+
   //this relies on the UI only running between Emulator::Scheduler::Event::Frame events
   //this will always be the case; so we can avoid an unnecessary copy or one-frame delay here
   //if the core were to exit between a frame event, the next frame might've been only partially rendered
@@ -247,7 +248,18 @@ auto Program::videoFrame(const uint16* data, uint pitch, uint width, uint height
   current = chrono::timestamp();
   if(current != previous) {
     previous = current;
-    showFrameRate({frameCounter * (1 + emulator->frameSkip()), " FPS"});
+    if(netplay.mode == Netplay::Running) {
+      string fmtPing = "";
+      for (auto& netStats : netplay.netStats) {
+        if(netStats.avg_ping == 0) continue;
+        if(fmtPing.size() > 0) fmtPing.append(" / ");
+        fmtPing.append((int)netStats.avg_ping);
+      }
+      showMessage({fmtPing," MS"});
+      showFrameRate({frameCounter * (1 + emulator->frameSkip()), " FPS"});
+    } else {
+      showFrameRate({frameCounter * (1 + emulator->frameSkip()), " FPS"});
+    }
     frameCounter = 0;
   }
 }
@@ -327,9 +339,14 @@ auto Program::inputPoll(uint port, uint device, uint input) -> int16 {
       value = mapping->poll();
     }
   }
+  
+  if(netplay.mode != Netplay::Inactive) {
+    return netplayGetInput(port, device, input);
+  }
+
   if(movie.mode == Movie::Mode::Recording) {
     movie.input.append(value);
-  } else if(movie.mode == Movie::Mode::Playing) {
+  } else if(movie.mode == Movie::Mode::Playing && netplay.mode == Netplay::Inactive) {
     if(movie.input) {
       value = movie.input.takeFirst();
     }

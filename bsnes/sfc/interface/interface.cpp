@@ -247,6 +247,10 @@ auto Interface::unserialize(serializer& s) -> bool {
   return system.unserialize(s);
 }
 
+auto Interface::serializeMap(bool synchronize) -> vector<Emulator::SerializeComponent> {
+  return system.serializeMap(synchronize);
+}
+
 auto Interface::read(uint24 address) -> uint8 {
   return cpu.readDisassembler(address);
 }
@@ -356,6 +360,10 @@ auto Interface::gpuMode7() const -> Emulator::Interface::GpuMode7 {
     result.luma = ppuhd.gpuMode7.luma;
   }
   return result;
+}
+
+auto Interface::setRollback(bool rollback) -> void {
+  system.rollback = rollback;
 }
 
 }

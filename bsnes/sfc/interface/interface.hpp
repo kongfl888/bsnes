@@ -60,6 +60,7 @@ struct Interface : Emulator::Interface {
 
   auto serialize(bool synchronize = true) -> serializer override;
   auto unserialize(serializer&) -> bool override;
+  auto serializeMap(bool synchronize = true) -> vector<Emulator::SerializeComponent> override;
 
   auto read(uint24 address) -> uint8 override;
   auto cheats(const vector<string>&) -> void override;
@@ -76,6 +77,7 @@ struct Interface : Emulator::Interface {
   auto setRunAhead(bool runAhead) -> void override;
 
   auto gpuMode7() const -> Emulator::Interface::GpuMode7 override;
+  auto setRollback(bool rollback) -> void override;
 };
 
 #include "configuration.hpp"
