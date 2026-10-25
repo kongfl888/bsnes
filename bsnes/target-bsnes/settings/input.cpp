@@ -1,15 +1,15 @@
-auto InputSettings::create() -> void {
+﻿auto InputSettings::create() -> void {
   setCollapsible();
   setVisible(false);
 
-  inputFocusLabel.setText("When focus is lost:");
-  pauseEmulation.setText("Pause emulation").onActivate([&] {
+  inputFocusLabel.setText("失去焦点时：");
+  pauseEmulation.setText("暂停模拟").onActivate([&] {
     settings.input.defocus = "Pause";
   });
-  blockInput.setText("Block input").onActivate([&] {
+  blockInput.setText("屏蔽输入").onActivate([&] {
     settings.input.defocus = "Block";
   });
-  allowInput.setText("Allow input").onActivate([&] {
+  allowInput.setText("允许输入").onActivate([&] {
     settings.input.defocus = "Allow";
   });
   if(settings.input.defocus == "Pause") pauseEmulation.setChecked();
@@ -17,12 +17,12 @@ auto InputSettings::create() -> void {
   if(settings.input.defocus == "Allow") allowInput.setChecked();
   separator.setColor({192, 192, 192});
 
-  portLabel.setText("Port:");
+  portLabel.setText("端口：");
   portList.onChange([&] { reloadDevices(); });
-  deviceLabel.setText("Device:");
+  deviceLabel.setText("设备：");
   deviceList.onChange([&] { reloadMappings(); });
-  turboLabel.setText("Turbo rate:").setToolTip(
-    "The number of frames to wait between toggling turbo buttons."
+  turboLabel.setText("连发速率：").setToolTip(
+    "连发按钮切换间隔帧数。"
   );
   for(uint frequency : range(1, 9)) {
     ComboButtonItem item{&turboList};
@@ -44,11 +44,11 @@ auto InputSettings::create() -> void {
   assignMouse1.onActivate([&] { assignMouseInput(0); });
   assignMouse2.onActivate([&] { assignMouseInput(1); });
   assignMouse3.onActivate([&] { assignMouseInput(2); });
-  assignButton.setText("Assign").onActivate([&] {
+  assignButton.setText("绑定").onActivate([&] {
     clearButton.doActivate();
     assignMapping(mappingList.selected().cell(0));
   });
-  clearButton.setText("Clear").onActivate([&] {
+  clearButton.setText("清空").onActivate([&] {
     cancelMapping();
     for(auto mapping : mappingList.batched()) {
       for(uint index : range(BindingLimit)) {
@@ -69,12 +69,12 @@ auto InputSettings::updateControls() -> void {
 
   if(activeMapping) {
     if(activeMapping->isDigital()) {
-      assignMouse1.setVisible().setText("Mouse Left");
-      assignMouse2.setVisible().setText("Mouse Middle");
-      assignMouse3.setVisible().setText("Mouse Right");
+      assignMouse1.setVisible().setText("鼠标左键");
+      assignMouse2.setVisible().setText("鼠标中键");
+      assignMouse3.setVisible().setText("鼠标右键");
     } else if(activeMapping->isAnalog()) {
-      assignMouse1.setVisible().setText("Mouse X-axis");
-      assignMouse2.setVisible().setText("Mouse Y-axis");
+      assignMouse1.setVisible().setText("鼠标X轴");
+      assignMouse2.setVisible().setText("鼠标Y轴");
     }
   }
 
@@ -113,9 +113,9 @@ auto InputSettings::reloadDevices() -> void {
 
 auto InputSettings::reloadMappings() -> void {
   mappingList.reset();
-  mappingList.append(TableViewColumn().setText("Name"));
+  mappingList.append(TableViewColumn().setText("名称"));
   for(uint n : range(BindingLimit)) {
-    mappingList.append(TableViewColumn().setText({"Mapping #", 1 + n}).setExpandable());
+    mappingList.append(TableViewColumn().setText({"绑定项 #", 1 + n}).setExpandable());
   }
   for(auto& mapping : activeDevice().mappings) {
     TableViewItem item{&mappingList};
@@ -148,8 +148,8 @@ auto InputSettings::assignMapping(TableViewCell cell) -> void {
     refreshMappings();  //clear existing 'assign...' text
     activeMapping = activeDevice().mappings[mapping.offset()];
     activeBinding = max(0, (int)cell.offset() - 1);
-    mappingList.item(mapping.offset()).cell(1 + activeBinding).setIcon(Icon::Go::Right).setText("(assign ...)");
-    settingsWindow.statusBar.setText({"Press a key or button for mapping #", 1 + activeBinding, " [", activeMapping->name, "] ..."});
+    mappingList.item(mapping.offset()).cell(1 + activeBinding).setIcon(Icon::Go::Right).setText("（绑定...）");
+    settingsWindow.statusBar.setText({"请按下分配给绑定项的按键：", 1 + activeBinding, " [", activeMapping->name, "] ..."});
     settingsWindow.setDismissable(false);
     updateControls();
     Application::processEvents();
@@ -184,7 +184,7 @@ auto InputSettings::inputEvent(shared_pointer<HID::Device> device, uint group, u
 
   if(activeMapping->bind(device, group, input, oldValue, newValue, activeBinding)) {
     activeMapping.reset();
-    settingsWindow.statusBar.setText("Mapping assigned.");
+    settingsWindow.statusBar.setText("绑定成功。");
     refreshMappings();
     timer.onActivate([&] {
       timer.setEnabled(false);

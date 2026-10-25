@@ -1,4 +1,4 @@
-auto Program::movieMode(Movie::Mode mode) -> void {
+﻿auto Program::movieMode(Movie::Mode mode) -> void {
   movie.mode = mode;
 
   if(movie.mode == Movie::Mode::Inactive) {
@@ -22,7 +22,7 @@ auto Program::movieMode(Movie::Mode mode) -> void {
 
 auto Program::moviePlay() -> void {
   BrowserDialog dialog;
-  dialog.setTitle("Play Movie");
+  dialog.setTitle("播放录像");
   dialog.setPath(Path::desktop());
   dialog.setFilters({string{"Movies (.bsv)|*.bsv"}});
   if(auto location = openFile(dialog)) {
@@ -89,7 +89,7 @@ auto Program::movieStop() -> void {
     movieMode(Movie::Mode::Inactive);
 
     BrowserDialog dialog;
-    dialog.setTitle("Save Movie");
+    dialog.setTitle("保存录像");
     dialog.setPath(Path::desktop());
     dialog.setFilters({string{"Movies (.bsv)|*.bsv"}});
     if(auto location = saveFile(dialog)) {

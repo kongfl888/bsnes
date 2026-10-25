@@ -1,4 +1,4 @@
-#include <nall/encode/bmp.hpp>
+﻿#include <nall/encode/bmp.hpp>
 #include <emulator/hdtrace.hpp>
 #include <heuristics/heuristics.hpp>
 #include <heuristics/heuristics.cpp>
@@ -89,7 +89,7 @@ auto Program::open(uint id, string name, vfs::file::mode mode, bool required) ->
   }
 
   if(!result && required) {
-    MessageDialog({"Error: missing required data: ", name}).setAlignment(*presentation).error();
+    MessageDialog({"错误：缺少必要数据： ", name}).setAlignment(*presentation).error();
   }
 
   return result;
@@ -106,7 +106,7 @@ auto Program::load(uint id, string name, string type, vector<string> options) ->
       superFamicom.option = game(0);
       superFamicom.location = game(1);
     } else {
-      dialog.setTitle("Load SNES ROM");
+      dialog.setTitle("加载 SNES ROM");
       dialog.setPath(path("Games", settings.path.recent.superFamicom));
       dialog.setFilters({string{"SNES ROMs|*.sfc:*.smc:*.zip:*.7z:*.SFC:*.SMC:*.ZIP:*.7Z:*.Sfc:*.Smc:*.Zip"}, string{"All Files|*"}});
       superFamicom.location = openGame(dialog);
@@ -126,7 +126,7 @@ auto Program::load(uint id, string name, string type, vector<string> options) ->
       gameBoy.option = game(0);
       gameBoy.location = game(1);
     } else {
-      dialog.setTitle("Load Game Boy ROM");
+      dialog.setTitle("加载 Game Boy ROM");
       dialog.setPath(path("Games", settings.path.recent.gameBoy));
       dialog.setFilters({string{"Game Boy ROMs|*.gb:*.gbc:*.zip:*.7z:*.GB:*.GBC:*.ZIP:*.7Z:*.Gb:*.Gbc:*.Zip"}, string{"All Files|*"}});
       gameBoy.location = openGame(dialog);
@@ -146,7 +146,7 @@ auto Program::load(uint id, string name, string type, vector<string> options) ->
       bsMemory.option = game(0);
       bsMemory.location = game(1);
     } else {
-      dialog.setTitle("Load BS Memory ROM");
+      dialog.setTitle("加载 BS Memory ROM");
       dialog.setPath(path("Games", settings.path.recent.bsMemory));
       dialog.setFilters({string{"BS Memory ROMs|*.bs:*.zip:*.7z:*.BS:*.ZIP:*.7Z:*.Bs:*.Zip"}, string{"All Files|*"}});
       bsMemory.location = openGame(dialog);
@@ -166,7 +166,7 @@ auto Program::load(uint id, string name, string type, vector<string> options) ->
       sufamiTurboA.option = game(0);
       sufamiTurboA.location = game(1);
     } else {
-      dialog.setTitle("Load Sufami Turbo ROM - Slot A");
+      dialog.setTitle("加载 Sufami Turbo ROM - Slot A");
       dialog.setPath(path("Games", settings.path.recent.sufamiTurboA));
       dialog.setFilters({string{"Sufami Turbo ROMs|*.st:*.zip:*.7z:*.ST:*.ZIP:*.7Z:*.St:*.Zip"}, string{"All Files|*"}});
       sufamiTurboA.location = openGame(dialog);
@@ -186,7 +186,7 @@ auto Program::load(uint id, string name, string type, vector<string> options) ->
       sufamiTurboB.option = game(0);
       sufamiTurboB.location = game(1);
     } else {
-      dialog.setTitle("Load Sufami Turbo ROM - Slot B");
+      dialog.setTitle("加载 Sufami Turbo ROM - Slot B");
       dialog.setPath(path("Games", settings.path.recent.sufamiTurboB));
       dialog.setFilters({string{"Sufami Turbo ROMs|*.st:*.zip:*.7z:*.ST:*.ZIP:*.7Z:*.St:*.Zip"}, string{"All Files|*"}});
       sufamiTurboB.location = openGame(dialog);

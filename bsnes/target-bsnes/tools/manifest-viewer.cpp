@@ -1,8 +1,8 @@
-auto ManifestViewer::create() -> void {
+﻿auto ManifestViewer::create() -> void {
   setCollapsible();
   setVisible(false);
 
-  manifestLabel.setText("Manifest:");
+  manifestLabel.setText("清单：");
   manifestOption.onChange([&] { selectManifest(); });
   manifestSpacer.setColor({192, 192, 192});
   #if 0 && defined(Hiro_SourceEdit)

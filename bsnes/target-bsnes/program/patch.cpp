@@ -1,4 +1,4 @@
-auto Program::appliedPatch() const -> bool {
+﻿auto Program::appliedPatch() const -> bool {
   return (
      superFamicom.patched
   || gameBoy.patched
@@ -31,11 +31,11 @@ auto Program::applyPatchIPS(vector<uint8_t>& data, string location) -> bool {
 
   bool headered = false;
   if(MessageDialog().setAlignment(*presentation).setTitle({Location::prefix(location), ".ips"}).setText({
-    "(You're seeing this prompt because IPS is a terrible patch file format,\n"
-    " and nobody can agree on whether SNES ROMs should be headered or not.\n"
-    " Please consider asking the patch author to use BPS patches instead.)\n\n"
-    "Does this IPS patch expect to be applied to a headered ROM?\n"
-    "If you're not sure, try 'No', and if it fails to work, try again with 'Yes'."
+    "（出现此提示是因为 IPS 是一个缺陷较多的补丁格式，\n"
+    " 关于 SNES ROM 是否应该加头部，没有统一的标准。\n"
+    " 请考虑让补丁作者使用 BPS 补丁。）\n\n"
+    "该 IPS 补丁是否打算应用到带有头部的 ROM？\n"
+    "如果你不确定，就先试“No”，如果不行，再试“Yes”。"
   }).question() == "Yes") headered = true;
 
   //sanity checks
@@ -135,7 +135,7 @@ auto Program::applyPatchBPS(vector<uint8_t>& input, string location) -> bool {
 
   MessageDialog({
     error, "\n\n",
-    "Please ensure you are using the correct (headerless) ROM for this patch."
+    "请确保您正在使用适用于此补丁的正确（无头部）ROM。"
   }).setAlignment(*presentation).error();
   return false;
 }

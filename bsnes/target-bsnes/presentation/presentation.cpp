@@ -1,58 +1,58 @@
-#include "../bsnes.hpp"
+﻿#include "../bsnes.hpp"
 namespace Instances { Instance<Presentation> presentation; }
 Presentation& presentation = Instances::presentation();
 
 auto Presentation::create() -> void {
-  systemMenu.setText(tr("System"));
-  loadGame.setIcon(Icon::Action::Open).setText({tr("Load Game"), " ..."}).onActivate([&] {
+  systemMenu.setText(tr("系统"));
+  loadGame.setIcon(Icon::Action::Open).setText({tr("加载游戏"), " ..."}).onActivate([&] {
     program.load();
   });
-  loadRecentGame.setIcon(Icon::Action::Open).setText(tr("Load Recent Game"));
+  loadRecentGame.setIcon(Icon::Action::Open).setText(tr("加载最近游戏"));
   updateRecentGames();
-  resetSystem.setIcon(Icon::Action::Refresh).setText(tr("Reset System")).setEnabled(false).onActivate([&] {
+  resetSystem.setIcon(Icon::Action::Refresh).setText(tr("重置系统")).setEnabled(false).onActivate([&] {
     program.reset();
   });
-  unloadGame.setIcon(Icon::Action::Remove).setText(tr("Unload Game")).setEnabled(false).onActivate([&] {
+  unloadGame.setIcon(Icon::Action::Remove).setText(tr("关闭游戏")).setEnabled(false).onActivate([&] {
     program.unload();
   });
-  controllerPort1.setIcon(Icon::Device::Joypad).setText(tr("Controller Port 1"));
-  controllerPort2.setIcon(Icon::Device::Joypad).setText(tr("Controller Port 2"));
-  expansionPort.setIcon(Icon::Device::Storage).setText(tr("Expansion Port"));
+  controllerPort1.setIcon(Icon::Device::Joypad).setText(tr("控制器端口1"));
+  controllerPort2.setIcon(Icon::Device::Joypad).setText(tr("控制器端口2"));
+  expansionPort.setIcon(Icon::Device::Storage).setText(tr("扩展端口"));
   updateDeviceMenu();
-  quit.setIcon(Icon::Action::Quit).setText(tr("Quit")).onActivate([&] { program.quit(); });
+  quit.setIcon(Icon::Action::Quit).setText(tr("退出")).onActivate([&] { program.quit(); });
 
-  settingsMenu.setText(tr("Settings"));
-  sizeMenu.setIcon(Icon::Emblem::Image).setText("Size");
+  settingsMenu.setText(tr("设置"));
+  sizeMenu.setIcon(Icon::Emblem::Image).setText("尺寸");
   updateSizeMenu();
-  outputMenu.setIcon(Icon::Emblem::Image).setText("Output");
-  centerViewport.setText("Center").onActivate([&] {
+  outputMenu.setIcon(Icon::Emblem::Image).setText("输出");
+  centerViewport.setText("居中").onActivate([&] {
     settings.video.output = "Center";
     video.clear();
   });
-  scaleViewport.setText("Scale").onActivate([&] {
+  scaleViewport.setText("缩放").onActivate([&] {
     settings.video.output = "Scale";
     video.clear();
   });
-  stretchViewport.setText("Stretch").onActivate([&] {
+  stretchViewport.setText("拉伸").onActivate([&] {
     settings.video.output = "Stretch";
     video.clear();
   });
   if(settings.video.output == "Center") centerViewport.setChecked();
   if(settings.video.output == "Scale") scaleViewport.setChecked();
   if(settings.video.output == "Stretch") stretchViewport.setChecked();
-  aspectCorrection.setText("Aspect Correction").setChecked(settings.video.aspectCorrection).onToggle([&] {
+  aspectCorrection.setText("比例校正").setChecked(settings.video.aspectCorrection).onToggle([&] {
     settings.video.aspectCorrection = aspectCorrection.checked();
     resizeWindow();
   });
-  showOverscanArea.setText("Show Overscan Area").setChecked(settings.video.overscan).onToggle([&] {
+  showOverscanArea.setText("显示过扫区域").setChecked(settings.video.overscan).onToggle([&] {
     settings.video.overscan = showOverscanArea.checked();
     resizeWindow();
   });
-  blurEmulation.setText("Hires Blur Emulation").setChecked(settings.video.blur).onToggle([&] {
+  blurEmulation.setText("高分辨率模糊模拟").setChecked(settings.video.blur).onToggle([&] {
     settings.video.blur = blurEmulation.checked();
     emulator->configure("Video/BlurEmulation", settings.video.blur);
   }).doToggle();
-  filterMenu.setIcon(Icon::Emblem::Image).setText("Filter");
+  filterMenu.setIcon(Icon::Emblem::Image).setText("滤镜");
   filterNone.setText("None").onActivate([&] { settings.video.filter = "None"; });
   filterScanlinesLight.setText("Scanlines (66%)").onActivate([&] { settings.video.filter = "Scanlines (66%)"; });
   filterScanlinesDark.setText("Scanlines (33%)").onActivate([&] { settings.video.filter = "Scanlines (33%)"; });
@@ -83,8 +83,8 @@ auto Presentation::create() -> void {
   if(settings.video.filter == "NTSC (Composite)") filterNTSC_Composite.setChecked();
   if(settings.video.filter == "NTSC (S-Video)") filterNTSC_SVideo.setChecked();
   if(settings.video.filter == "NTSC (RGB)") filterNTSC_RGB.setChecked();
-  shaderMenu.setIcon(Icon::Emblem::Image).setText("Shader");
-  muteAudio.setText("Mute Audio").setChecked(settings.audio.mute).onToggle([&] {
+  shaderMenu.setIcon(Icon::Emblem::Image).setText("着色器");
+  muteAudio.setText("静音").setChecked(settings.audio.mute).onToggle([&] {
     settings.audio.mute = muteAudio.checked();
     if(settings.audio.mute) {
       program.mute |= Program::Mute::Always;
@@ -92,7 +92,7 @@ auto Presentation::create() -> void {
       program.mute &= ~Program::Mute::Always;
     }
   }).doToggle();  //set initial mute state flag
-  showStatusBar.setText("Show Status Bar").setChecked(settings.general.statusBar).onToggle([&] {
+  showStatusBar.setText("显示状态栏").setChecked(settings.general.statusBar).onToggle([&] {
     settings.general.statusBar = showStatusBar.checked();
     if(!showStatusBar.checked()) {
       layout.remove(statusLayout);
@@ -101,18 +101,18 @@ auto Presentation::create() -> void {
     }
     if(visible()) resizeWindow();
   });
-  videoSettings.setIcon(Icon::Device::Display).setText("Video ...").onActivate([&] { settingsWindow.show(0); });
-  audioSettings.setIcon(Icon::Device::Speaker).setText("Audio ...").onActivate([&] { settingsWindow.show(1); });
-  inputSettings.setIcon(Icon::Device::Joypad).setText("Input ...").onActivate([&] { settingsWindow.show(2); });
-  hotkeySettings.setIcon(Icon::Device::Keyboard).setText("Hotkeys ...").onActivate([&] { settingsWindow.show(3); });
-  pathSettings.setIcon(Icon::Emblem::Folder).setText("Paths ...").onActivate([&] { settingsWindow.show(4); });
-  emulatorSettings.setIcon(Icon::Action::Settings).setText("Emulator ...").onActivate([&] { settingsWindow.show(5); });
-  enhancementSettings.setIcon(Icon::Action::Add).setText("Enhancements ...").onActivate([&] { settingsWindow.show(6); });
-  compatibilitySettings.setIcon(Icon::Action::Remove).setText("Compatibility ...").onActivate([&] { settingsWindow.show(7); });
-  driverSettings.setIcon(Icon::Place::Settings).setText("Drivers ...").onActivate([&] { settingsWindow.show(8); });
+  videoSettings.setIcon(Icon::Device::Display).setText("视频...").onActivate([&] { settingsWindow.show(0); });
+  audioSettings.setIcon(Icon::Device::Speaker).setText("音频...").onActivate([&] { settingsWindow.show(1); });
+  inputSettings.setIcon(Icon::Device::Joypad).setText("输入...").onActivate([&] { settingsWindow.show(2); });
+  hotkeySettings.setIcon(Icon::Device::Keyboard).setText("热键...").onActivate([&] { settingsWindow.show(3); });
+  pathSettings.setIcon(Icon::Emblem::Folder).setText("目录...").onActivate([&] { settingsWindow.show(4); });
+  emulatorSettings.setIcon(Icon::Action::Settings).setText("模拟器...").onActivate([&] { settingsWindow.show(5); });
+  enhancementSettings.setIcon(Icon::Action::Add).setText("增强选项...").onActivate([&] { settingsWindow.show(6); });
+  compatibilitySettings.setIcon(Icon::Action::Remove).setText("兼容选项...").onActivate([&] { settingsWindow.show(7); });
+  driverSettings.setIcon(Icon::Place::Settings).setText("驱动...").onActivate([&] { settingsWindow.show(8); });
 
-  toolsMenu.setText(tr("Tools")).setVisible(false);
-  saveState.setIcon(Icon::Media::Record).setText("Save State");
+  toolsMenu.setText(tr("工具")).setVisible(false);
+  saveState.setIcon(Icon::Media::Record).setText("保存即时存档");
   for(uint index : range(QuickStates)) {
     MenuItem item{&saveState};
     item.setAttribute("name", {"Quick/Slot ", 1 + index});
@@ -120,7 +120,7 @@ auto Presentation::create() -> void {
     item.setText({"Slot ", 1 + index});
     item.onActivate([=] { program.saveState({"Quick/Slot ", 1 + index}); });
   }
-  loadState.setIcon(Icon::Media::Rewind).setText("Load State");
+  loadState.setIcon(Icon::Media::Rewind).setText("读取即时存档");
   for(uint index : range(QuickStates)) {
     MenuItem item{&loadState};
     item.setAttribute("name", {"Quick/Slot ", 1 + index});
@@ -141,67 +141,67 @@ auto Presentation::create() -> void {
   .setIcon(Icon::Edit::Redo).setText("Redo Last Undo").onActivate([&] {
     program.loadState("Quick/Redo");
   }));
-  loadState.append(MenuItem().setIcon(Icon::Edit::Clear).setText("Remove All States").onActivate([&] {
-    if(MessageDialog("Are you sure you want to permanently remove all quick states for this game?").setAlignment(*this).question() == "Yes") {
+  loadState.append(MenuItem().setIcon(Icon::Edit::Clear).setText("删除全部存档").onActivate([&] {
+    if(MessageDialog("您确定要永久删除此游戏的所有即时存档吗？").setAlignment(*this).question() == "Yes") {
       for(uint index : range(QuickStates)) program.removeState({"Quick/Slot ", 1 + index});
       program.removeState("Quick/Undo");
       program.removeState("Quick/Redo");
     }
   }));
-  speedMenu.setIcon(Icon::Device::Clock).setText("Speed").setEnabled(!settings.video.blocking && settings.audio.blocking);
-  speedSlowest.setText("50% (Slowest)").setAttribute("multiplier", "2.0").onActivate([&] { program.updateAudioFrequency(); });
-  speedSlow.setText("75% (Slow)").setAttribute("multiplier", "1.333").onActivate([&] { program.updateAudioFrequency(); });
-  speedNormal.setText("100% (Normal)").setAttribute("multiplier", "1.0").onActivate([&] { program.updateAudioFrequency(); });
-  speedFast.setText("150% (Fast)").setAttribute("multiplier", "0.667").onActivate([&] { program.updateAudioFrequency(); });
-  speedFastest.setText("200% (Fastest)").setAttribute("multiplier", "0.5").onActivate([&] { program.updateAudioFrequency(); });
-  runMenu.setIcon(Icon::Media::Play).setText("Run Mode");
-  runEmulation.setText("Normal").onActivate([&] {
+  speedMenu.setIcon(Icon::Device::Clock).setText("速度").setEnabled(!settings.video.blocking && settings.audio.blocking);
+  speedSlowest.setText("50%（最慢）").setAttribute("multiplier", "2.0").onActivate([&] { program.updateAudioFrequency(); });
+  speedSlow.setText("75%（慢速）").setAttribute("multiplier", "1.333").onActivate([&] { program.updateAudioFrequency(); });
+  speedNormal.setText("100%（正常）").setAttribute("multiplier", "1.0").onActivate([&] { program.updateAudioFrequency(); });
+  speedFast.setText("150%（快速）").setAttribute("multiplier", "0.667").onActivate([&] { program.updateAudioFrequency(); });
+  speedFastest.setText("200%（最快）").setAttribute("multiplier", "0.5").onActivate([&] { program.updateAudioFrequency(); });
+  runMenu.setIcon(Icon::Media::Play).setText("运行模式");
+  runEmulation.setText("正常").onActivate([&] {
   });
-  pauseEmulation.setText("Pause Emulation").onActivate([&] {
+  pauseEmulation.setText("暂停模拟").onActivate([&] {
     audio.clear();
   });
-  frameAdvance.setText("Frame Advance").onActivate([&] {
+  frameAdvance.setText("逐帧步进").onActivate([&] {
     audio.clear();
     program.frameAdvanceLock = true;
   });
-  movieMenu.setIcon(Icon::Emblem::Video).setText("Movie");
-  moviePlay.setIcon(Icon::Media::Play).setText("Play").onActivate([&] { program.moviePlay(); });
-  movieRecord.setIcon(Icon::Media::Record).setText("Record").onActivate([&] { program.movieRecord(false); });
-  movieRecordFromBeginning.setIcon(Icon::Media::Record).setText("Reset and Record").onActivate([&] { program.movieRecord(true); });
-  movieStop.setIcon(Icon::Media::Stop).setText("Stop").onActivate([&] { program.movieStop(); });
-  captureScreenshot.setIcon(Icon::Emblem::Image).setText("Capture Screenshot").onActivate([&] {
+  movieMenu.setIcon(Icon::Emblem::Video).setText("录像");
+  moviePlay.setIcon(Icon::Media::Play).setText("播放").onActivate([&] { program.moviePlay(); });
+  movieRecord.setIcon(Icon::Media::Record).setText("录制").onActivate([&] { program.movieRecord(false); });
+  movieRecordFromBeginning.setIcon(Icon::Media::Record).setText("重置并录制").onActivate([&] { program.movieRecord(true); });
+  movieStop.setIcon(Icon::Media::Stop).setText("停止").onActivate([&] { program.movieStop(); });
+  captureScreenshot.setIcon(Icon::Emblem::Image).setText("截取截图").onActivate([&] {
     program.captureScreenshot();
   });
-  cheatFinder.setIcon(Icon::Action::Search).setText("Cheat Finder ...").onActivate([&] { toolsWindow.show(0); });
-  cheatEditor.setIcon(Icon::Edit::Replace).setText("Cheat Editor ...").onActivate([&] { toolsWindow.show(1); });
-  stateManager.setIcon(Icon::Application::FileManager).setText("State Manager ...").onActivate([&] { toolsWindow.show(2); });
-  manifestViewer.setIcon(Icon::Emblem::Text).setText("Manifest Viewer ...").onActivate([&] { toolsWindow.show(3); });
-  netplayMenu.setText(tr("Netplay")).setVisible(false);
-  setupNetplay.setIcon(Icon::Device::Network).setText({tr("Setup")}).onActivate([&] {
+  cheatFinder.setIcon(Icon::Action::Search).setText("金手指搜索...").onActivate([&] { toolsWindow.show(0); });
+  cheatEditor.setIcon(Icon::Edit::Replace).setText("金手指编辑器...").onActivate([&] { toolsWindow.show(1); });
+  stateManager.setIcon(Icon::Application::FileManager).setText("存档管理器...").onActivate([&] { toolsWindow.show(2); });
+  manifestViewer.setIcon(Icon::Emblem::Text).setText("清单查看器...").onActivate([&] { toolsWindow.show(3); });
+  netplayMenu.setText(tr("联机")).setVisible(false);
+  setupNetplay.setIcon(Icon::Device::Network).setText({tr("设置")}).onActivate([&] {
     if(program.netplay.mode != Program::Netplay::Inactive) {
-      MessageDialog("Please stop netplay before setting up a new session.")
-      .setTitle("Netplay Setup")
+      MessageDialog("请在设置新会话之前停止网络游戏。")
+      .setTitle("联机设置")
       .setAlignment(*this)
       .warning();
       return;
     }
     netplayWindow.show();
   });
-  stopNetplay.setIcon(Icon::Prompt::Question).setText({tr("Stop")}).onActivate([&] {
+  stopNetplay.setIcon(Icon::Prompt::Question).setText({tr("停止")}).onActivate([&] {
     program.netplayStop();
   });
-  stressNetplay.setIcon(Icon::Action::Refresh).setText({tr("Desync Stress Test")}).onActivate([&] {
+  stressNetplay.setIcon(Icon::Action::Refresh).setText({tr("不同步压力测试")}).onActivate([&] {
     if(program.netplay.mode != Program::Netplay::Inactive) {
-      MessageDialog("Please stop netplay before starting a desync stress test.")
-      .setTitle("Netplay")
+      MessageDialog("在开始脱机压力测试之前，请停止网络游戏。")
+      .setTitle("联机")
       .setAlignment(*this)
       .warning();
       return;
     }
     program.netplayStressStart(2, 8);
   });
-  helpMenu.setText(tr("Help"));
-  aboutSameBoy.setIcon(Icon::Prompt::Question).setText({tr("About SameBoy"), " ..."}).onActivate([&] {
+  helpMenu.setText(tr("帮助"));
+  aboutSameBoy.setIcon(Icon::Prompt::Question).setText({tr("关于 SameBoy"), " ..."}).onActivate([&] {
     AboutDialog()
     .setName("SameBoy")
     .setLogo(Resource::SameBoy)
@@ -213,13 +213,14 @@ auto Presentation::create() -> void {
     .setAlignment(*this)
     .show();
   });
-  aboutBsnes.setIcon(Icon::Prompt::Question).setText({tr("About bsnes"), " ..."}).onActivate([&] {
+  aboutBsnes.setIcon(Icon::Prompt::Question).setText({tr("关于 bsnes"), " ..."}).onActivate([&] {
     AboutDialog()
     .setName(Emulator::Name)
     .setLogo(Resource::Logo)
-    .setDescription("Super Nintendo emulator")
+    .setDescription("Super Nintendo emulator with HD and Netplay")
     .setVersion(Emulator::Version)
     .setCopyright(Emulator::Copyright)
+    .setTranslator(Emulator::Translator)
     .setLicense(Emulator::License)
     .setWebsite(Emulator::Website)
     .setAlignment(*this)
@@ -276,7 +277,7 @@ auto Presentation::create() -> void {
     program.quit();
   });
 
-  setTitle({"bsnes v", Emulator::Version, " - netplay v", Emulator::NetplayVersion});
+  setTitle({"bsnes v", Emulator::Version, " - HD + netplay v", Emulator::NetplayVersion});
   resizeWindow();
   setAlignment(Alignment::Center);
 
@@ -316,15 +317,15 @@ auto Presentation::updateStatusIcon() -> void {
     image emblem{Icon::Emblem::Program};
     icon.impose(image::blend::sourceAlpha, 0, (StatusHeight - 16) / 2, emblem, 0, 0, 16, 16);
     statusIcon.setIcon(icon).setToolTip(
-      "This is a known clean game image.\n"
-      "PCB emulation is 100% accurate."
+      "这是已知纯净游戏镜像。\n"
+      "PCB仿真准确率达到100%。"
     );
   } else if(emulator->loaded()) {
     image emblem{Icon::Emblem::Binary};
     icon.impose(image::blend::sourceAlpha, 0, (StatusHeight - 16) / 2, emblem, 0, 0, 16, 16);
     statusIcon.setIcon(icon).setToolTip(
-      "This is not a verified game image.\n"
-      "PCB emulation is relying on heuristics."
+      "该游戏镜像未经过验证。\n"
+      "PCB仿真依赖于探索式方法。"
     );
   } else {
     statusIcon.setIcon(icon).setToolTip();
@@ -431,10 +432,10 @@ auto Presentation::updateSizeMenu() -> void {
   }
 
   sizeMenu.append(MenuSeparator());
-  sizeMenu.append(MenuItem().setIcon(Icon::Action::Remove).setText("Shrink Window To Size").onActivate([&] {
+  sizeMenu.append(MenuItem().setIcon(Icon::Action::Remove).setText("窗口适配尺寸").onActivate([&] {
     resizeWindow();
   }));
-  sizeMenu.append(MenuItem().setIcon(Icon::Place::Settings).setText("Center Window").onActivate([&] {
+  sizeMenu.append(MenuItem().setIcon(Icon::Place::Settings).setText("窗口居中").onActivate([&] {
     setAlignment(Alignment::Center);
   }));
 }
@@ -531,7 +532,7 @@ auto Presentation::updateRecentGames() -> void {
   }
 
   loadRecentGame.append(MenuSeparator());
-  loadRecentGame.append(MenuItem().setIcon(Icon::Edit::Clear).setText(tr("Clear List")).onActivate([&] {
+  loadRecentGame.append(MenuItem().setIcon(Icon::Edit::Clear).setText(tr("清空列表")).onActivate([&] {
     for(auto index : range(RecentGames)) {
       settings({"Game/Recent/", 1 + index}).setValue("");
     }
@@ -562,14 +563,14 @@ auto Presentation::updateShaders() -> void {
   Group shaders;
 
   MenuRadioItem none{&shaderMenu};
-  none.setText("None").onActivate([&] {
+  none.setText("无").onActivate([&] {
     settings.video.shader = "None";
     program.updateVideoShader();
   });
   shaders.append(none);
 
   MenuRadioItem blur{&shaderMenu};
-  blur.setText("Blur").onActivate([&] {
+  blur.setText("模糊").onActivate([&] {
     settings.video.shader = "Blur";
     program.updateVideoShader();
   });

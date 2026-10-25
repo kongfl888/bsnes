@@ -1,4 +1,4 @@
-auto NetplayWindow::isValidIP(const string& ip) -> bool {
+﻿auto NetplayWindow::isValidIP(const string& ip) -> bool {
     auto parts = ip.split(".");
     if(parts.size() != 4) return false;
 
@@ -62,11 +62,11 @@ auto NetplayWindow::updateEditingState() -> void {
 
     if(index) {
         auto& entry = entries[index()];
-        editingLabel.setText({"Editing ", roleText(entry), ":"});
+        editingLabel.setText({"编辑 ", roleText(entry), ":"});
         editIPValue.setText(entry.ip);
         editPortValue.setText(entry.port);
     } else {
-        editingLabel.setText("Select an entry to edit");
+        editingLabel.setText("选中一项进行编辑");
         editIPValue.setText("");
         editPortValue.setText("");
     }
@@ -103,19 +103,19 @@ auto NetplayWindow::sortPlayerList() -> void {
 auto NetplayWindow::create() -> void {
     layout.setPadding(5_sx, 5_sx);
 
-    roleLabel.setText("Your Role:").setFont(Font().setBold());
-    rolePlayer1.setText("Player 1").onActivate([&] { updateRole(Role::Player1); });
-    rolePlayer2.setText("Player 2").onActivate([&] { updateRole(Role::Player2); });
-    rolePlayer3.setText("Player 3").onActivate([&] { updateRole(Role::Player3); });
-    rolePlayer4.setText("Player 4").onActivate([&] { updateRole(Role::Player4); });
-    rolePlayer5.setText("Player 5").onActivate([&] { updateRole(Role::Player5); });
-    roleSpectator.setText("Spectator").onActivate([&] { updateRole(Role::Spectator); });
+    roleLabel.setText("你的身份：").setFont(Font().setBold());
+    rolePlayer1.setText("玩家1").onActivate([&] { updateRole(Role::Player1); });
+    rolePlayer2.setText("玩家2").onActivate([&] { updateRole(Role::Player2); });
+    rolePlayer3.setText("玩家3").onActivate([&] { updateRole(Role::Player3); });
+    rolePlayer4.setText("玩家4").onActivate([&] { updateRole(Role::Player4); });
+    rolePlayer5.setText("玩家5").onActivate([&] { updateRole(Role::Player5); });
+    roleSpectator.setText("观众").onActivate([&] { updateRole(Role::Spectator); });
 
     roleSpacer.setColor({192, 192, 192});
 
-    connectionLabel.setText("Your Setup:").setFont(Font().setBold());
+    connectionLabel.setText("本机设置：").setFont(Font().setBold());
 
-    portLabel.setText("Your Port:");
+    portLabel.setText("本机端口：");
     portValue.setText("55435").onChange([&] {
         string port = portValue.text().strip();
         bool valid = isValidPort(port);
@@ -123,12 +123,12 @@ auto NetplayWindow::create() -> void {
         if(valid) config.localPort = port.natural();
     });
 
-    spectatorPlayerCountLabel.setText("Players in session:");
+    spectatorPlayerCountLabel.setText("当前会话玩家数：");
     spectatorPlayerCountValue.setText("2").onChange([&] {
         config.spectatorPlayerCount = spectatorPlayerCountValue.text().strip().integer();
     });
 
-    rollbackLabel.setText("Rollback Frames:");
+    rollbackLabel.setText("回滚帧数：");
     rollbackValue.setText("8").setAlignment(0.5);
     rollbackSlider.setLength(13).setPosition(8).onChange([&] {
         uint frames = rollbackSlider.position();
@@ -136,7 +136,7 @@ auto NetplayWindow::create() -> void {
         config.rollbackframes = frames;
     });
 
-    delayLabel.setText("Input Delay:");
+    delayLabel.setText("输入延迟：");
     delayValue.setText("2").setAlignment(0.5);
     delaySlider.setLength(11).setPosition(2).onChange([&] {
         uint delay = delaySlider.position();
@@ -146,10 +146,10 @@ auto NetplayWindow::create() -> void {
 
     sliderSpacer.setColor({192, 192, 192});
 
-    remotePlayersLabel.setText("Other Players:").setFont(Font().setBold());
+    remotePlayersLabel.setText("其他玩家：").setFont(Font().setBold());
     remotePlayersList.onChange([&] { updateEditingState(); });
 
-    editIPLabel.setText("IP:");
+    editIPLabel.setText("IP：");
     editIPValue.setText("").setEnabled(false).onChange([&] {
         string ip = editIPValue.text().strip();
         bool valid = isValidRemoteIP(ip);
@@ -157,7 +157,7 @@ auto NetplayWindow::create() -> void {
         if(valid) updateSelectedIP(ip);
     });
 
-    editPortLabel.setText("Port:");
+    editPortLabel.setText("端口：");
     editPortValue.setText("").setEnabled(false).onChange([&] {
         string port = editPortValue.text().strip();
         bool valid = isValidPort(port);
@@ -166,9 +166,9 @@ auto NetplayWindow::create() -> void {
         if(valid) updateSelectedPort(port);
     });
 
-    btnAddPlayer.setText("Add Player").onActivate([&] { addPlayer(); });
-    btnAddSpectator.setText("Add Spectator").onActivate([&] { addSpectator(); });
-    btnRemove.setText("Remove").onActivate([&] { removeSelectedPlayer(); }).setEnabled(false);
+    btnAddPlayer.setText("添加玩家").onActivate([&] { addPlayer(); });
+    btnAddSpectator.setText("添加观众").onActivate([&] { addSpectator(); });
+    btnRemove.setText("移除").onActivate([&] { removeSelectedPlayer(); }).setEnabled(false);
 
     editingLabel.setFont(Font().setBold());
 
@@ -177,22 +177,22 @@ auto NetplayWindow::create() -> void {
 
     bottomSpacer.setColor({192, 192, 192});
 
-    devModeCheck.setText("Dev Mode").setChecked(false).onToggle([&] {
+    devModeCheck.setText("开发模式").setChecked(false).onToggle([&] {
         devMode = devModeCheck.checked();
         string ip = editIPValue.text().strip();
         if(ip) setValidationColor(editIPValue, isValidRemoteIP(ip), true);
     });
 
-    desyncCheck.setText("Desync Detection").setChecked(false).setToolTip(
-        "Compares a checksum of the emulated state with the other players each frame.\n"
+    desyncCheck.setText("不同步检测").setChecked(false).setToolTip(
+        "每一帧将模拟器状态校验和与其他玩家比对。\n"
         "Desyncs are written to the desyncs folder alongside the states that caused them.\n\n"
         "Costs performance, so leave this off unless you are hunting a desync."
     ).onToggle([&] { config.desyncDetection = desyncCheck.checked(); });
 
-    btnStart.setText("Start Netplay").setIcon(Icon::Media::Play).onActivate([&] { startSession(); });
-    btnCancel.setText("Cancel").setIcon(Icon::Action::Quit).onActivate([&] { doClose(); });
+    btnStart.setText("开始联机").setIcon(Icon::Media::Play).onActivate([&] { startSession(); });
+    btnCancel.setText("取消").setIcon(Icon::Action::Quit).onActivate([&] { doClose(); });
 
-    setTitle("Netplay Setup");
+    setTitle("联机设置");
     setSize({500_sx, 365_sy});
     setAlignment({0.5, 0.5});
     onClose([&] { setVisible(false); });
@@ -203,7 +203,7 @@ auto NetplayWindow::updateRole(Role role) -> void {
     bool isSpectator = (role == Role::Spectator);
 
     if(isSpectator) {
-        remotePlayersLabel.setText("Player to Spectate:");
+        remotePlayersLabel.setText("要观战的玩家：");
 
         entries.reset();
         entries.append(PlayerEntry{false, 0, "127.0.0.1", "55435"});
@@ -217,7 +217,7 @@ auto NetplayWindow::updateRole(Role role) -> void {
         spectatorPlayerCountValue.setVisible(true);
         slidersLayout.setVisible(false);
     } else {
-        remotePlayersLabel.setText("Other Players:");
+        remotePlayersLabel.setText("其他玩家：");
         autoPopulatePlayerList();
 
         btnAddPlayer.setEnabled(true);
@@ -264,8 +264,8 @@ auto NetplayWindow::addPlayer() -> void {
     }
 
     MessageDialog()
-        .setTitle("Maximum Players")
-        .setText("All 5 player slots are already in use.\n\nYou can add spectators instead.")
+        .setTitle("玩家上限")
+        .setText("全部5个玩家位已占用。\n\n你可以添加观众。")
         .information();
 }
 
@@ -282,9 +282,9 @@ auto NetplayWindow::removeSelectedPlayer() -> void {
 
     if(currentRole == Role::Spectator) {
         MessageDialog()
-            .setTitle("Cannot Remove")
-            .setText("As a spectator, you must have a player to connect to.\n\n"
-                     "You can edit the IP and port, but cannot remove this entry.")
+            .setTitle("无法移除")
+            .setText("作为观众，你必须连接到一名玩家。\n\n"
+                     "您可以编辑IP和端口，但无法删除此条目。")
             .information();
         return;
     }
@@ -296,10 +296,10 @@ auto NetplayWindow::removeSelectedPlayer() -> void {
 
         if(entry.playerNumber < myPlayerNum) {
             MessageDialog()
-                .setTitle("Cannot Remove Player")
-                .setText({"You selected Player ", myPlayerNum, ", so you must have players 1-",
-                         myPlayerNum - 1, " configured.\n\n",
-                         "You can only remove players with numbers higher than yours."})
+                .setTitle("无法移除玩家")
+                .setText({"你选中了玩家 ", myPlayerNum, ", 因此需要有 players 1-",
+                         myPlayerNum - 1, " 已配置.\n\n",
+                         "你只能移除编号比你高的玩家。"})
                 .information();
             return;
         }
@@ -311,9 +311,9 @@ auto NetplayWindow::removeSelectedPlayer() -> void {
 
         if(playerCount <= 2) {
             MessageDialog()
-                .setTitle("Minimum Players Required")
-                .setText("You must have at least 2 players in a netplay session.\n\n"
-                         "Cannot remove this player as it would leave only 1 player total.")
+                .setTitle("最低玩家数量要求")
+                .setText("联机会话至少需要2名玩家。\n\n"
+                         "无法移除此玩家，因为这样将只剩下1名玩家。")
                 .information();
             return;
         }
@@ -328,8 +328,8 @@ auto NetplayWindow::removeSelectedPlayer() -> void {
 auto NetplayWindow::startSession() -> void {
     if(!config.localPort || config.localPort > 65535) {
         MessageDialog()
-            .setTitle("Invalid Port")
-            .setText("Please enter a valid port number (1-65535).")
+            .setTitle("端口无效")
+            .setText("请输入有效的端口号（1-65535）。")
             .information();
         return;
     }
@@ -340,8 +340,8 @@ auto NetplayWindow::startSession() -> void {
 
     if(isSpectator && (config.spectatorPlayerCount < 2 || config.spectatorPlayerCount > 5)) {
         MessageDialog()
-            .setTitle("Invalid Player Count")
-            .setText("Please specify how many players are in the session (2-5).")
+            .setTitle("玩家数量无效")
+            .setText("请指定会话内玩家数量（2-5）。")
             .information();
         return;
     }
@@ -353,22 +353,22 @@ auto NetplayWindow::startSession() -> void {
 
         if(!isValidRemoteIP(entry.ip)) {
             MessageDialog()
-                .setTitle("Invalid IP Address")
-                .setText({"Loopback addresses (127.x.x.x) are not allowed for netplay.\n\n",
-                         "Player: ", roleText(entry), "\nIP: ", entry.ip, "\n\n",
-                         "Please enter the actual network IP address of the remote player.\n",
-                         "Or enable Developer Mode to allow loopback addresses."})
+                .setTitle("IP地址无效")
+                .setText({"联机不允许使用回环地址（127.x.x.x）。\n\n",
+                         "玩家: ", roleText(entry), "\nIP: ", entry.ip, "\n\n",
+                         "请输入远程玩家的实际网络IP地址。\n",
+                         "或者启用开发者模式以允许使用环回地址。"})
                 .information();
             return;
         }
 
         if(devMode && isLoopbackIP(entry.ip) && entry.port.natural() == config.localPort) {
             MessageDialog()
-                .setTitle("Invalid Configuration")
-                .setText({"Player: ", roleText(entry), " is set to 127.0.0.1:", entry.port,
-                         ", the same address and port you're listening on yourself.\n\n",
-                         "Your own packets would loop back to you, falsely appearing as a connection.\n",
-                         "Use a different port for this entry (e.g. the other instance's own port)."})
+                .setTitle("配置无效")
+                .setText({"玩家： ", roleText(entry), " is set to 127.0.0.1:", entry.port,
+                         "，和你自己监听的地址和端口相同。\n\n",
+                         "你自己的数据包会回传给你，从而错误地显示为连接。\n",
+                         "为该条目使用不同的端口（例如：另一个实例自己的端口）。"})
                 .information();
             return;
         }
@@ -386,10 +386,10 @@ auto NetplayWindow::startSession() -> void {
 
     if(remotes.size() == 0) {
         MessageDialog()
-            .setTitle("No Connection Info")
+            .setTitle("缺少连接信息")
             .setText(isSpectator
-                ? "You need to connect to one player to spectate.\n\nEnter the IP address of any player in the session."
-                : "You need to add at least one other player.\n\nEach player should enter the IP addresses of ALL other players.\nThis is a peer-to-peer connection - everyone connects to everyone.")
+                ? "观战需要连接到一名玩家。\n\n输入会话中任意玩家的IP地址。"
+                : "您需要至少添加一名其他玩家。\n\n每位玩家应输入所有其他玩家的IP地址。\n这是一种点对点连接——每个人都能连接到每个人。")
             .information();
         return;
     }

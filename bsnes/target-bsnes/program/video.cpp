@@ -1,4 +1,4 @@
-auto Program::updateVideoDriver(Window parent) -> void {
+﻿auto Program::updateVideoDriver(Window parent) -> void {
   auto changed = (bool)video;
   video.create(settings.video.driver);
   video.setContext(presentation.viewport.handle());
@@ -23,7 +23,7 @@ auto Program::updateVideoDriver(Window parent) -> void {
 
   if(!video.ready()) {
     MessageDialog({
-      "Error: failed to initialize [", settings.video.driver, "] video driver."
+      "错误：初始化显示驱动 [", settings.video.driver, "] 失败。"
     }).setAlignment(parent).error();
     settings.video.driver = "None";
     return updateVideoDriver(parent);

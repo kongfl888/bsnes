@@ -1,19 +1,19 @@
-auto AudioSettings::create() -> void {
+﻿auto AudioSettings::create() -> void {
   setCollapsible();
   setVisible(false);
 
-  effectsLabel.setFont(Font().setBold()).setText("Effects");
+  effectsLabel.setFont(Font().setBold()).setText("效果");
   effectsLayout.setSize({3, 3});
   effectsLayout.column(0).setAlignment(1.0);
-  skewLabel.setText("Skew:").setToolTip(
-    "Adjusts the audio frequency by the skew amount (in Hz.)\n\n"
-    "This is essentially static rate control:\n"
-    "First, enable both video and audio sync.\n"
-    "Then, raise or lower this value to try to reduce errors.\n"
-    "One direction will help video, but hurt audio.\n"
-    "The other direction will do the reverse.\n"
-    "The idea is to find the best middle ground.\n\n"
-    "You should leave this at 0 when using dynamic rate control."
+  skewLabel.setText("偏移：").setToolTip(
+    "以赫兹为单位调整音频频率偏移量。\n\n"
+    "这本质上是静态速率控制：\n"
+    "首先，启用视频和音频同步功能。\n"
+    "然后，调整这个值的大小，以尝试减少错误。\n"
+    "一个方向会促进视频的发展，但会损害音频。\n"
+    "另一个方向则相反。\n"
+    "我们的想法是找到最佳的折中方案。\n\n"
+    "使用动态速率控制时，应将其设置为0。"
   );
   skewValue.setAlignment(0.5).setToolTip(skewLabel.toolTip());
   skewSlider.setLength(10001).setPosition(settings.audio.skew + 5000).onChange([&] {
@@ -22,10 +22,10 @@ auto AudioSettings::create() -> void {
     skewValue.setText(value);
     if(audio.driver() != "None") program.updateAudioFrequency();
   }).doChange();
-  volumeLabel.setText("Volume:").setToolTip(
-    "Adjusts the audio output volume.\n\n"
-    "You should not use values above 100%, if possible!\n"
-    "If you do, audio clipping distortion can occur."
+  volumeLabel.setText("音量：").setToolTip(
+    "调整音频输出音量。\n\n"
+    "如果可能的话，你不应使用超过100%的值！\n"
+    "如果这样做，可能会发生音频削波失真。"
   );
   volumeValue.setAlignment(0.5).setToolTip(volumeLabel.toolTip());
   volumeSlider.setLength(201).setPosition(settings.audio.volume).onChange([&] {
@@ -34,9 +34,9 @@ auto AudioSettings::create() -> void {
     volumeValue.setText(value);
     program.updateAudioEffects();
   }).doChange();
-  balanceLabel.setText("Balance:").setToolTip(
-    "Pans audio to the left (lower values) or right (higher values.)\n\n"
-    "50% (centered) is the recommended setting."
+  balanceLabel.setText("平衡：").setToolTip(
+    "音频声像，数值越小偏左，越大偏右。\n\n"
+    "建议设置为50%（居中）。"
   );
   balanceValue.setAlignment(0.5).setToolTip(balanceLabel.toolTip());
   balanceSlider.setLength(101).setPosition(settings.audio.balance).onChange([&] {
@@ -46,7 +46,7 @@ auto AudioSettings::create() -> void {
     program.updateAudioEffects();
   }).doChange();
 
-  muteUnfocused.setText("Mute when unfocused").setChecked(settings.audio.muteUnfocused).onToggle([&] {
+  muteUnfocused.setText("失去焦点时静音").setChecked(settings.audio.muteUnfocused).onToggle([&] {
     settings.audio.muteUnfocused = muteUnfocused.checked();
   });
 }

@@ -1,4 +1,4 @@
-#include "../bsnes.hpp"
+﻿#include "../bsnes.hpp"
 #include "video.cpp"
 #include "audio.cpp"
 #include "input.cpp"
@@ -201,15 +201,15 @@ public:
 
 auto SettingsWindow::create() -> void {
   layout.setPadding(5_sx);
-  panelList.append(ListViewItem().setText("Video").setIcon(Icon::Device::Display));
-  panelList.append(ListViewItem().setText("Audio").setIcon(Icon::Device::Speaker));
-  panelList.append(ListViewItem().setText("Input").setIcon(Icon::Device::Joypad));
-  panelList.append(ListViewItem().setText("Hotkeys").setIcon(Icon::Device::Keyboard));
-  panelList.append(ListViewItem().setText("Paths").setIcon(Icon::Emblem::Folder));
-  panelList.append(ListViewItem().setText("Emulator").setIcon(Icon::Action::Settings));
-  panelList.append(ListViewItem().setText("Enhancements").setIcon(Icon::Action::Add));
-  panelList.append(ListViewItem().setText("Compatibility").setIcon(Icon::Action::Remove));
-  panelList.append(ListViewItem().setText("Drivers").setIcon(Icon::Place::Settings));
+  panelList.append(ListViewItem().setText("视频").setIcon(Icon::Device::Display));
+  panelList.append(ListViewItem().setText("音频").setIcon(Icon::Device::Speaker));
+  panelList.append(ListViewItem().setText("输入").setIcon(Icon::Device::Joypad));
+  panelList.append(ListViewItem().setText("热键").setIcon(Icon::Device::Keyboard));
+  panelList.append(ListViewItem().setText("目录").setIcon(Icon::Emblem::Folder));
+  panelList.append(ListViewItem().setText("模拟器").setIcon(Icon::Action::Settings));
+  panelList.append(ListViewItem().setText("增强选项").setIcon(Icon::Action::Add));
+  panelList.append(ListViewItem().setText("兼容选项").setIcon(Icon::Action::Remove));
+  panelList.append(ListViewItem().setText("驱动").setIcon(Icon::Place::Settings));
   panelList.onChange([&] {
     if(auto item = panelList.selected()) {
       show(item.offset());
@@ -229,7 +229,7 @@ auto SettingsWindow::create() -> void {
   panelContainer.append(driverSettings, Size{~0, ~0});
   statusBar.setFont(Font().setBold());
 
-  setTitle("Settings");
+  setTitle("设置");
   setSize({680_sx, 500_sy});
   setAlignment({0.0, 1.0});
   setDismissable();

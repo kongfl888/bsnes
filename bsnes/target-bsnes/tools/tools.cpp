@@ -1,4 +1,4 @@
-#include "../bsnes.hpp"
+﻿#include "../bsnes.hpp"
 #include "netplay-window.cpp"
 #include "cheat-finder.cpp"
 #include "cheat-editor.cpp"
@@ -46,10 +46,10 @@ public:
 
 auto ToolsWindow::create() -> void {
   layout.setPadding(5_sx);
-  panelList.append(ListViewItem().setText("Cheat Finder").setIcon(Icon::Action::Search));
-  panelList.append(ListViewItem().setText("Cheat Editor").setIcon(Icon::Edit::Replace));
-  panelList.append(ListViewItem().setText("State Manager").setIcon(Icon::Application::FileManager));
-  panelList.append(ListViewItem().setText("Manifest Viewer").setIcon(Icon::Emblem::Text));
+  panelList.append(ListViewItem().setText("金手指搜索器").setIcon(Icon::Action::Search));
+  panelList.append(ListViewItem().setText("金手指编辑器").setIcon(Icon::Edit::Replace));
+  panelList.append(ListViewItem().setText("存档管理器").setIcon(Icon::Application::FileManager));
+  panelList.append(ListViewItem().setText("清单查看器").setIcon(Icon::Emblem::Text));
   panelList.onChange([&] {
     if(auto item = panelList.selected()) {
       show(item.offset());
@@ -63,7 +63,7 @@ auto ToolsWindow::create() -> void {
   panelContainer.append(stateManager, Size{~0, ~0});
   panelContainer.append(manifestViewer, Size{~0, ~0});
 
-  setTitle("Tools");
+  setTitle("工具");
   setSize({720_sx, 400_sy});
   setAlignment({1.0, 1.0});
   setDismissable();

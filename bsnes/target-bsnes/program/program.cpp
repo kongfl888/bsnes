@@ -1,4 +1,4 @@
-#include "../bsnes.hpp"
+﻿#include "../bsnes.hpp"
 #include "platform.cpp"
 #include "game.cpp"
 #include "game-pak.cpp"
@@ -50,8 +50,8 @@ auto Program::create() -> void {
 
   if(settings.general.crashed) {
     MessageDialog(
-      "Driver crash detected. Hardware drivers have been disabled.\n"
-      "Please reconfigure drivers in the advanced settings panel."
+      "检测到驱动程序崩溃。硬件驱动程序已被禁用。\n"
+      "请在未加载游戏时到设置重新选择各项驱动。"
     ).setAlignment(*presentation).information();
     settings.video.driver = "None";
     settings.audio.driver = "None";

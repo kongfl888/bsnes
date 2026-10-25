@@ -1,4 +1,4 @@
-auto Program::updateInputDriver(Window parent) -> void {
+﻿auto Program::updateInputDriver(Window parent) -> void {
   auto changed = (bool)input;
   input.create(settings.input.driver);
   input.setContext(presentation.viewport.handle());
@@ -11,7 +11,7 @@ auto Program::updateInputDriver(Window parent) -> void {
 
   if(!input.ready()) {
     MessageDialog({
-      "Error: failed to initialize [", settings.input.driver, "] input driver."
+      "错误：初始化输入驱动器 [", settings.input.driver, "] 失败。"
     }).setAlignment(parent).error();
     settings.input.driver = "None";
     return updateInputDriver(parent);

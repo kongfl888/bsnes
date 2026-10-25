@@ -49,6 +49,11 @@ auto AboutDialog::setWebsite(const string& website) -> type& {
   return *this;
 }
 
+auto AboutDialog::setTranslator(const string& translator) -> type& {
+  state.translator = translator;
+  return *this;
+}
+
 auto AboutDialog::show() -> void {
   Window window;
   window.onClose([&] { window.setModal(false); });
@@ -108,6 +113,20 @@ auto AboutDialog::show() -> void {
   copyrightValue.setForegroundColor({0, 0, 0});
   copyrightValue.setText(state.copyright);
   if(!state.copyright) copyrightLayout.setVisible(false);
+
+  HorizontalLayout translatorLayout{&layout, Size{~0, 0}, 0};
+  translatorLayout.setCollapsible();
+  Label translatorLabel{&translatorLayout, Size{~0, 0}, 3_sx};
+  translatorLabel.setAlignment(1.0);
+  translatorLabel.setFont(Font().setBold());
+  translatorLabel.setForegroundColor({0, 0, 0});
+  translatorLabel.setText("Translator:");
+  Label translatorValue{&translatorLayout, Size{~0, 0}};
+  translatorValue.setAlignment(0.0);
+  translatorValue.setFont(Font().setBold());
+  translatorValue.setForegroundColor({0, 0, 0});
+  translatorValue.setText(state.translator);
+  if(!state.translator) translatorLayout.setVisible(false);
 
   HorizontalLayout licenseLayout{&layout, Size{~0, 0}, 0};
   licenseLayout.setCollapsible();

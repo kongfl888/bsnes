@@ -1,15 +1,15 @@
-auto EmulatorSettings::create() -> void {
+﻿auto EmulatorSettings::create() -> void {
   setCollapsible();
   setVisible(false);
 
-  optionsLabel.setText("Options").setFont(Font().setBold());
-  warnOnUnverifiedGames.setText("Warn when loading games that have not been verified").setChecked(settings.emulator.warnOnUnverifiedGames).onToggle([&] {
+  optionsLabel.setText("选项").setFont(Font().setBold());
+  warnOnUnverifiedGames.setText("加载未验证游戏时提示警告").setChecked(settings.emulator.warnOnUnverifiedGames).onToggle([&] {
     settings.emulator.warnOnUnverifiedGames = warnOnUnverifiedGames.checked();
   });
-  autoSaveMemory.setText("Auto-save memory periodically").setChecked(settings.emulator.autoSaveMemory.enable).onToggle([&] {
+  autoSaveMemory.setText("定期自动保存内存").setChecked(settings.emulator.autoSaveMemory.enable).onToggle([&] {
     settings.emulator.autoSaveMemory.enable = autoSaveMemory.checked();
   });
-  autoSaveStateOnUnload.setText("Auto-save undo state when unloading games").setChecked(settings.emulator.autoSaveStateOnUnload).onToggle([&] {
+  autoSaveStateOnUnload.setText("关闭游戏时自动保存 undo 快照").setChecked(settings.emulator.autoSaveStateOnUnload).onToggle([&] {
     settings.emulator.autoSaveStateOnUnload = autoSaveStateOnUnload.checked();
     if(!autoSaveStateOnUnload.checked()) {
       autoLoadStateOnLoad.setEnabled(false).setChecked(false).doToggle();
@@ -17,46 +17,46 @@ auto EmulatorSettings::create() -> void {
       autoLoadStateOnLoad.setEnabled(true);
     }
   }).doToggle();
-  autoLoadStateOnLoad.setText("Auto-resume on load").setChecked(settings.emulator.autoLoadStateOnLoad).onToggle([&] {
+  autoLoadStateOnLoad.setText("加载后自动继续运行").setChecked(settings.emulator.autoLoadStateOnLoad).onToggle([&] {
     settings.emulator.autoLoadStateOnLoad = autoLoadStateOnLoad.checked();
   });
-  nativeFileDialogs.setText("Use native file dialogs").setChecked(settings.general.nativeFileDialogs).onToggle([&] {
+  nativeFileDialogs.setText("使用系统原生文件对话框").setChecked(settings.general.nativeFileDialogs).onToggle([&] {
     settings.general.nativeFileDialogs = nativeFileDialogs.checked();
   });
-  screenSaver.setText("Allow screensaver during emulation").setChecked(settings.general.screenSaver).onToggle([&] {
+  screenSaver.setText("模拟器运行时允许屏幕保护").setChecked(settings.general.screenSaver).onToggle([&] {
     settings.general.screenSaver = screenSaver.checked();
     // setting can be toggled while emulation is active
     if(!program.inactive()) Application::setScreenSaver(settings.general.screenSaver);
   });
   optionsSpacer.setColor({192, 192, 192});
 
-  fastForwardLabel.setText("Fast Forward").setFont(Font().setBold());
+  fastForwardLabel.setText("快进").setFont(Font().setBold());
 
-  frameSkipLabel.setText("Frame skip:").setToolTip({
-    "Set how many frames to skip while fast forwarding.\n"
+  frameSkipLabel.setText("跳帧：").setToolTip({
+    "设置快进时跳过的帧数。\n"
     "Frame skipping allows a higher maximum fast forwarding frame rate."
   });
 
-  frameSkipAmount.append(ComboButtonItem().setText("None"));
-  frameSkipAmount.append(ComboButtonItem().setText("1 frame"));
-  frameSkipAmount.append(ComboButtonItem().setText("2 frames"));
-  frameSkipAmount.append(ComboButtonItem().setText("3 frames"));
-  frameSkipAmount.append(ComboButtonItem().setText("4 frames"));
-  frameSkipAmount.append(ComboButtonItem().setText("5 frames"));
-  frameSkipAmount.append(ComboButtonItem().setText("6 frames"));
-  frameSkipAmount.append(ComboButtonItem().setText("7 frames"));
-  frameSkipAmount.append(ComboButtonItem().setText("8 frames"));
-  frameSkipAmount.append(ComboButtonItem().setText("9 frames"));
+  frameSkipAmount.append(ComboButtonItem().setText("无"));
+  frameSkipAmount.append(ComboButtonItem().setText("1帧"));
+  frameSkipAmount.append(ComboButtonItem().setText("2帧"));
+  frameSkipAmount.append(ComboButtonItem().setText("3帧"));
+  frameSkipAmount.append(ComboButtonItem().setText("4帧"));
+  frameSkipAmount.append(ComboButtonItem().setText("5帧"));
+  frameSkipAmount.append(ComboButtonItem().setText("6帧"));
+  frameSkipAmount.append(ComboButtonItem().setText("7帧"));
+  frameSkipAmount.append(ComboButtonItem().setText("8帧"));
+  frameSkipAmount.append(ComboButtonItem().setText("9帧"));
   frameSkipAmount.item(settings.fastForward.frameSkip).setSelected();
   frameSkipAmount.onChange([&] {
     settings.fastForward.frameSkip = frameSkipAmount.selected().offset();
   });
 
-  limiterLabel.setText("Limiter:").setToolTip({
-    "Set the maximum speed when fast forwarding."
+  limiterLabel.setText("控速：").setToolTip({
+    "设置快进的最高速度上限。"
   });
 
-  limiterAmount.append(ComboButtonItem().setText("None"));
+  limiterAmount.append(ComboButtonItem().setText("无"));
   limiterAmount.append(ComboButtonItem().setText("200%"));
   limiterAmount.append(ComboButtonItem().setText("300%"));
   limiterAmount.append(ComboButtonItem().setText("400%"));
@@ -84,22 +84,22 @@ auto EmulatorSettings::create() -> void {
     if(index == 7) settings.fastForward.limiter = 8;
   });
 
-  fastForwardMute.setText("Mute while fast forwarding").setChecked(settings.fastForward.mute).onToggle([&] {
+  fastForwardMute.setText("快进时静音").setChecked(settings.fastForward.mute).onToggle([&] {
     settings.fastForward.mute = fastForwardMute.checked();
   });
 
   fastForwardSpacer.setColor({192, 192, 192});
 
-  rewindLabel.setText("Rewind").setFont(Font().setBold());
+  rewindLabel.setText("倒带").setFont(Font().setBold());
 
-  rewindFrequencyLabel.setText("Frequency:");
-  rewindFrequencyOption.append(ComboButtonItem().setText("Disabled"));
-  rewindFrequencyOption.append(ComboButtonItem().setText("Every 10 frames"));
-  rewindFrequencyOption.append(ComboButtonItem().setText("Every 20 frames"));
-  rewindFrequencyOption.append(ComboButtonItem().setText("Every 30 frames"));
-  rewindFrequencyOption.append(ComboButtonItem().setText("Every 40 frames"));
-  rewindFrequencyOption.append(ComboButtonItem().setText("Every 50 frames"));
-  rewindFrequencyOption.append(ComboButtonItem().setText("Every 60 frames"));
+  rewindFrequencyLabel.setText("频率：");
+  rewindFrequencyOption.append(ComboButtonItem().setText("关闭"));
+  rewindFrequencyOption.append(ComboButtonItem().setText("每10帧"));
+  rewindFrequencyOption.append(ComboButtonItem().setText("每20帧"));
+  rewindFrequencyOption.append(ComboButtonItem().setText("每30帧"));
+  rewindFrequencyOption.append(ComboButtonItem().setText("每40帧"));
+  rewindFrequencyOption.append(ComboButtonItem().setText("每50帧"));
+  rewindFrequencyOption.append(ComboButtonItem().setText("每60帧"));
   if(settings.rewind.frequency ==  0) rewindFrequencyOption.item(0).setSelected();
   if(settings.rewind.frequency == 10) rewindFrequencyOption.item(1).setSelected();
   if(settings.rewind.frequency == 20) rewindFrequencyOption.item(2).setSelected();
@@ -112,7 +112,7 @@ auto EmulatorSettings::create() -> void {
     program.rewindReset();
   });
 
-  rewindLengthLabel.setText("Length:");
+  rewindLengthLabel.setText("时长：");
   rewindLengthOption.append(ComboButtonItem().setText( "10 states"));
   rewindLengthOption.append(ComboButtonItem().setText( "20 states"));
   rewindLengthOption.append(ComboButtonItem().setText( "40 states"));
@@ -130,7 +130,7 @@ auto EmulatorSettings::create() -> void {
     program.rewindReset();
   });
 
-  rewindMute.setText("Mute while rewinding").setChecked(settings.rewind.mute).onToggle([&] {
+  rewindMute.setText("倒带时静音").setChecked(settings.rewind.mute).onToggle([&] {
     settings.rewind.mute = rewindMute.checked();
   });
 }

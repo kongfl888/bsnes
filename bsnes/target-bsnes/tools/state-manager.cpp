@@ -1,12 +1,12 @@
-#include <nall/encode/bmp.hpp>
+﻿#include <nall/encode/bmp.hpp>
 
 auto StateWindow::create() -> void {
   layout.setPadding(5_sx);
-  nameLabel.setText("Name:");
+  nameLabel.setText("名称：");
   nameValue.onActivate([&] { if(acceptButton.enabled()) acceptButton.doActivate(); });
   nameValue.onChange([&] { doChange(); });
   acceptButton.onActivate([&] { doAccept(); });
-  cancelButton.setText("Cancel").onActivate([&] { setVisible(false); });
+  cancelButton.setText("取消").onActivate([&] { setVisible(false); });
 
   setSize({400_sx, layout.minimumSize().height()});
   setDismissable();
@@ -17,12 +17,12 @@ auto StateWindow::show(string name) -> void {
   setAttribute("name", {name.split("/").last()});
   nameValue.setText(attribute("name"));
   doChange();
-  setTitle(!attribute("name") ? "Add State" : "Rename State");
+  setTitle(!attribute("name") ? "添加" : "重命名");
   setAlignment(*toolsWindow);
   setVisible();
   setFocused();
   nameValue.setFocused();
-  acceptButton.setText(!attribute("name") ? "Add" : "Rename");
+  acceptButton.setText(!attribute("name") ? "添加" : "重命名");
 }
 
 auto StateWindow::doChange() -> void {
@@ -38,7 +38,7 @@ auto StateWindow::doChange() -> void {
 
 auto StateWindow::doAccept() -> void {
   string name = {attribute("type"), nameValue.text().strip()};
-  if(acceptButton.text() == "Add") {
+  if(acceptButton.text() == "添加") {
     stateManager.createState(name);
   } else {
     stateManager.modifyState(name);
@@ -63,26 +63,26 @@ auto StateManager::create() -> void {
   stateList.onSize([&] {
     stateList.resizeColumns();
   });
-  categoryLabel.setText("Category:");
-  categoryOption.append(ComboButtonItem().setText("Managed States").setAttribute("type", "Managed/"));
-  categoryOption.append(ComboButtonItem().setText("Quick States").setAttribute("type", "Quick/"));
+  categoryLabel.setText("分类：");
+  categoryOption.append(ComboButtonItem().setText("托管存档").setAttribute("type", "Managed/"));
+  categoryOption.append(ComboButtonItem().setText("即时存档").setAttribute("type", "Quick/"));
   categoryOption.onChange([&] { loadStates(); });
   statePreviewSeparator1.setColor({192, 192, 192});
-  statePreviewLabel.setFont(Font().setBold()).setText("Preview");
+  statePreviewLabel.setFont(Font().setBold()).setText("预览");
   statePreviewSeparator2.setColor({192, 192, 192});
-  loadButton.setText("Load").onActivate([&] {
+  loadButton.setText("读取").onActivate([&] {
     if(auto item = stateList.selected()) program.loadState(item.attribute("name"));
   });
-  saveButton.setText("Save").onActivate([&] {
+  saveButton.setText("保存").onActivate([&] {
     if(auto item = stateList.selected()) program.saveState(item.attribute("name"));
   });
-  addButton.setText("Add").onActivate([&] {
+  addButton.setText("新增").onActivate([&] {
     stateWindow.show(type());
   });
-  editButton.setText("Rename").onActivate([&] {
+  editButton.setText("重命名").onActivate([&] {
     if(auto item = stateList.selected()) stateWindow.show(item.attribute("name"));
   });
-  removeButton.setText("Remove").onActivate([&] {
+  removeButton.setText("删除").onActivate([&] {
     removeStates();
   });
 }
@@ -93,8 +93,8 @@ auto StateManager::type() const -> string {
 
 auto StateManager::loadStates() -> void {
   stateList.reset();
-  stateList.append(TableViewColumn().setText("Name").setSorting(Sort::Ascending).setExpandable());
-  stateList.append(TableViewColumn().setText("Date").setForegroundColor({160, 160, 160}));
+  stateList.append(TableViewColumn().setText("名称").setSorting(Sort::Ascending).setExpandable());
+  stateList.append(TableViewColumn().setText("日期").setForegroundColor({160, 160, 160}));
   auto type = this->type();
   for(auto& state : program.availableStates(type)) {
     TableViewItem item{&stateList};
@@ -132,7 +132,7 @@ auto StateManager::modifyState(string name) -> void {
 
 auto StateManager::removeStates() -> void {
   if(auto batched = stateList.batched()) {
-    if(MessageDialog("Are you sure you want to permanently remove the selected state(s)?")
+    if(MessageDialog("您确定要永久移除所选即时存档吗？")
     .setAlignment(*toolsWindow).question() == "Yes") {
       auto lock = acquire();
       for(auto& item : batched) program.removeState(item.attribute("name"));

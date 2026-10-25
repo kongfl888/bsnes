@@ -1,4 +1,4 @@
-auto Program::load() -> void {
+﻿auto Program::load() -> void {
   unload();
 
   emulator->configure("System/Serialization/Method", settings.emulator.serialization.method);
@@ -41,13 +41,13 @@ auto Program::load() -> void {
     //prevent Program::main() from calling Emulator::run() during this dialog window
     auto lock = acquire();
     auto response = MessageDialog(
-      "Warning: this game image is unverified.\n"
-      "Running it *may* be a security risk.\n\n"
-      "Do you wish to run the game anyway?"
+      "警告：此游戏镜像未经验证。\n"
+      "运行它“可能”存在安全风险。\n\n"
+      "你仍然希望运行这个游戏吗？"
     ).setAlignment(*presentation).question({"Always", "Yes", "No"});
     if(response == "No") {
       emulator->unload();
-      return showMessage("Game loading cancelled");
+      return showMessage("游戏加载已取消");
     }
     if(response == "Always") {
       emulatorSettings.warnOnUnverifiedGames.setChecked(false).doToggle();
@@ -340,9 +340,9 @@ auto Program::videoSupportsHdGpu() const -> bool {
 
 auto Program::selectFastPpuDueToDriver(Window parent) -> void {
   MessageDialog({
-    "Error: the ", video.driver(), " video driver does not support HD PPU.\n"
-    "GPU sampling requires OpenGL 3.2.\n"
-    "The Fast PPU has been selected."
+    "错误: 该显示驱动 ", video.driver(), " 可能不支持 HD PPU。\n"
+    "GPU 采样需要使用 OpenGL 3.2。\n"
+    "建议在不加载游戏时进行设置。已改用 Fast PPU。"
   }).setAlignment(parent).error();
 
   settings.emulator.hack.ppu.hd = false;
@@ -364,7 +364,7 @@ auto Program::selectFastPpuDueToDriver(Window parent) -> void {
     }
     ppuRendererActive = 1;
     rewindReset();
-    showMessage(restored ? "PPU renderer applied" : "PPU renderer applied (game restarted)");
+    showMessage(restored ? "PPU渲染器已应用" : "已应用PPU渲染器（游戏已重启）");
   } else {
     ppuRendererActive = 1;
     emulator->configure("Hacks/PPU/Fast", true);
@@ -379,9 +379,9 @@ auto Program::applyPPURenderer(Window parent) -> void {
 
   if(selected == 2 && settings.emulator.hack.ppu.hdMode7.gpuSupersample && !videoSupportsHdGpu()) {
     MessageDialog({
-      "Error: the ", video.driver(), " video driver does not support HD PPU.\n"
-      "GPU sampling requires OpenGL 3.2.\n"
-      "HD was not applied."
+      "错误: 该显示驱动 ", video.driver(), " 不支持 HD PPU.。\n"
+      "GPU 采样需要使用 OpenGL 3.2。 \n"
+      "建议在不加载游戏时进行设置。未应用 HD。"
     }).setAlignment(parent).error();
     enhancementSettings.loadingMode7 = true;
     enhancementSettings.ppuRenderer.item(ppuRendererActive).setSelected();
@@ -405,13 +405,13 @@ auto Program::applyPPURenderer(Window parent) -> void {
   bool oldScanline = ppuRendererActive == 1 || ppuRendererActive == 2;
   bool newScanline = selected == 1 || selected == 2;
   string warning = {
-    "Warning: changing the PPU renderer while a game is loaded may cause bsnes to crash.\n"
-    "It is highly recommended you unload your game first to be safe.\n"
+    "警告：在游戏加载时更改 PPU 渲染器可能会导致 bsnes 崩溃。\n"
+    "为了安全起见，强烈建议您关闭载游戏。\n"
   };
   if(!oldScanline || !newScanline) {
-    warning.append("\nSwitching to or from the Accurate renderer cannot keep your current position.\n");
+    warning.append("\n切换至或切换出精确渲染器时，无法保持当前位置。\n");
   }
-  warning.append("Do you wish to proceed with the renderer change now anyway?");
+  warning.append("您现在仍然想继续进行渲染器更改吗？");
 
   if(MessageDialog(warning).setAlignment(parent).question() != "Yes") return;
 
@@ -437,7 +437,7 @@ auto Program::applyPPURenderer(Window parent) -> void {
   ppuRendererActive = selected;
   rewindReset();
   enhancementSettings.ppuRendererChanged();
-  showMessage(restored ? "PPU renderer applied" : "PPU renderer applied (game restarted)");
+  showMessage(restored ? "PPU渲染器已应用" : "已应用PPU渲染器（游戏已重启）");
 }
 
 auto Program::unload() -> void {
@@ -463,7 +463,7 @@ auto Program::unload() -> void {
   bsMemory = {};
   sufamiTurboA = {};
   sufamiTurboB = {};
-  presentation.setTitle({"bsnes v", Emulator::Version, " | netplay v", Emulator::NetplayVersion});
+  presentation.setTitle({"bsnes v", Emulator::Version, " | HD + netplay v", Emulator::NetplayVersion});
   presentation.resetSystem.setEnabled(false);
   presentation.unloadGame.setEnabled(false);
   presentation.toolsMenu.setVisible(false);

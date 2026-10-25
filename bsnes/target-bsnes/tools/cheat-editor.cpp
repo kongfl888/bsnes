@@ -1,12 +1,12 @@
-auto CheatDatabase::create() -> void {
+﻿auto CheatDatabase::create() -> void {
   layout.setPadding(5_sx);
-  selectAllButton.setText("Select All").onActivate([&] {
+  selectAllButton.setText("全选").onActivate([&] {
     for(auto item : cheatList.items()) item.setChecked(true);
   });
-  unselectAllButton.setText("Unselect All").onActivate([&] {
+  unselectAllButton.setText("取消全选").onActivate([&] {
     for(auto item : cheatList.items()) item.setChecked(false);
   });
-  addCheatsButton.setText("Add Cheats").onActivate([&] {
+  addCheatsButton.setText("添加金手指").onActivate([&] {
     addCheats();
   });
 
@@ -47,7 +47,7 @@ auto CheatDatabase::findCheats() -> void {
     return;
   }
 
-  MessageDialog().setAlignment(*toolsWindow).setText("Sorry, no cheats were found for this game.").information();
+  MessageDialog().setAlignment(*toolsWindow).setText("未找到该游戏的金手指。").information();
 }
 
 auto CheatDatabase::addCheats() -> void {
@@ -66,15 +66,15 @@ auto CheatWindow::create() -> void {
   tableLayout.setSize({2, 2});
   tableLayout.cell(0).setAlignment({1.0, 0.5});
   tableLayout.cell(2).setAlignment({1.0, 0.0});
-  nameLabel.setText("Name:");
+  nameLabel.setText("名称：");
   nameValue.onActivate([&] { if(acceptButton.enabled()) acceptButton.doActivate(); });
   nameValue.onChange([&] { doChange(); });
-  codeLabel.setText("Code(s):");
+  codeLabel.setText("代码：");
   codeValue.setFont(Font().setFamily(Font::Mono));
   codeValue.onChange([&] { doChange(); });
-  enableOption.setText("Enable");
+  enableOption.setText("启用");
   acceptButton.onActivate([&] { doAccept(); });
-  cancelButton.setText("Cancel").onActivate([&] { setVisible(false); });
+  cancelButton.setText("取消").onActivate([&] { setVisible(false); });
 
   setSize({400_sx, layout.minimumSize().height() + 100_sx});
   setDismissable();
@@ -85,12 +85,12 @@ auto CheatWindow::show(Cheat cheat) -> void {
   codeValue.setText(cheat.code.split("+").strip().merge("\n"));
   enableOption.setChecked(cheat.enable);
   doChange();
-  setTitle(!cheat.name ? "Add Cheat" : "Edit Cheat");
+  setTitle(!cheat.name ? "添加金手指" : "编辑金手指");
   setAlignment(*toolsWindow);
   setVisible();
   setFocused();
   nameValue.setFocused();
-  acceptButton.setText(!cheat.name ? "Add" : "Edit");
+  acceptButton.setText(!cheat.name ? "添加" : "编辑");
 }
 
 auto CheatWindow::doChange() -> void {
@@ -125,7 +125,7 @@ auto CheatWindow::doAccept() -> void {
         valid_codes.append(code);
       } else {
         invalid =
-          "Invalid code(s), please only use codes in the following format:\n"
+          "代码无效，请仅使用以下格式的代码：\n"
           "\n"
           "Game Genie (eee-eee)\n"
           "Game Genie (eee-eee-eee)\n"
@@ -138,7 +138,7 @@ auto CheatWindow::doAccept() -> void {
   if(invalid) return (void)MessageDialog().setAlignment(*toolsWindow).setText(invalid).error();
 
   Cheat cheat = {nameValue.text().strip(), valid_codes.merge("+"), enableOption.checked()};
-  if(acceptButton.text() == "Add") {
+  if(acceptButton.text() == "添加") {
     cheatEditor.addCheat(cheat);
   } else {
     cheatEditor.editCheat(cheat);
@@ -180,11 +180,11 @@ auto CheatEditor::create() -> void {
   cheatList.onSize([&] {
     cheatList.resizeColumns();
   });
-  findCheatsButton.setText("Find Cheats ...").onActivate([&] {
+  findCheatsButton.setText("搜索金手指...").onActivate([&] {
     cheatDatabase.findCheats();
   });
-  enableCheats.setText("Enable Cheats").setToolTip(
-    "Master enable for all cheat codes.\n"
+  enableCheats.setText("启用金手指").setToolTip(
+    "总开关，控制全部金手指。\n"
     "When unchecked, no cheat codes will be active.\n\n"
     "Use this to bypass game areas that have problems with cheats."
   ).setChecked(settings.emulator.cheats.enable).onToggle([&] {
@@ -196,15 +196,15 @@ auto CheatEditor::create() -> void {
     }
     synchronizeCodes();
   });
-  addButton.setText("Add").onActivate([&] {
+  addButton.setText("添加").onActivate([&] {
     cheatWindow.show();
   });
-  editButton.setText("Edit").onActivate([&] {
+  editButton.setText("编辑").onActivate([&] {
     if(auto item = cheatList.selected()) {
       cheatWindow.show(cheats[item.offset()]);
     }
   });
-  removeButton.setText("Remove").onActivate([&] {
+  removeButton.setText("删除").onActivate([&] {
     removeCheats();
   });
 
@@ -215,7 +215,7 @@ auto CheatEditor::create() -> void {
 auto CheatEditor::refresh() -> void {
   cheatList.reset();
   cheatList.append(TableViewColumn());
-  cheatList.append(TableViewColumn().setText("Name").setSorting(Sort::Ascending).setExpandable());
+  cheatList.append(TableViewColumn().setText("名称").setSorting(Sort::Ascending).setExpandable());
   for(auto& cheat : cheats) {
     TableViewItem item{&cheatList};
     item.append(TableViewCell().setCheckable().setChecked(cheat.enable));
@@ -250,7 +250,7 @@ auto CheatEditor::editCheat(Cheat cheat) -> void {
 
 auto CheatEditor::removeCheats() -> void {
   if(auto batched = cheatList.batched()) {
-    if(MessageDialog("Are you sure you want to permanently remove the selected cheat(s)?")
+    if(MessageDialog("您确定要永久删除所选金手指吗？")
     .setAlignment(*toolsWindow).question() == "Yes") {
       for(auto& item : reverse(batched)) cheats.remove(item.offset());
       cheats.sort();

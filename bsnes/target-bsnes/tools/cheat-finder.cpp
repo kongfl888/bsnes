@@ -1,4 +1,4 @@
-auto CheatFinder::create() -> void {
+﻿auto CheatFinder::create() -> void {
   setCollapsible();
   setVisible(false);
 
@@ -26,10 +26,10 @@ auto CheatFinder::create() -> void {
     }
   });
   searchValue.onActivate([&] { eventScan(); });
-  searchLabel.setText("Value:");
-  searchSize.append(ComboButtonItem().setText("Byte"));
-  searchSize.append(ComboButtonItem().setText("Word"));
-  searchSize.append(ComboButtonItem().setText("Long"));
+  searchLabel.setText("数值：");
+  searchSize.append(ComboButtonItem().setText("字节"));
+  searchSize.append(ComboButtonItem().setText("字"));
+  searchSize.append(ComboButtonItem().setText("长字"));
   searchMode.append(ComboButtonItem().setText("="));
   searchMode.append(ComboButtonItem().setText("!="));
   searchMode.append(ComboButtonItem().setText(">="));
@@ -37,9 +37,9 @@ auto CheatFinder::create() -> void {
   searchMode.append(ComboButtonItem().setText(">"));
   searchMode.append(ComboButtonItem().setText("<"));
   searchSpan.append(ComboButtonItem().setText("WRAM"));
-  searchSpan.append(ComboButtonItem().setText("All"));
-  searchScan.setText("Scan").onActivate([&] { eventScan(); });
-  searchClear.setText("Clear").onActivate([&] { eventClear(); });
+  searchSpan.append(ComboButtonItem().setText("全部"));
+  searchScan.setText("扫描").onActivate([&] { eventScan(); });
+  searchClear.setText("清空").onActivate([&] { eventClear(); });
 
   refresh();
 }
@@ -55,8 +55,8 @@ auto CheatFinder::restart() -> void {
 
 auto CheatFinder::refresh() -> void {
   searchList.reset();
-  searchList.append(TableViewColumn().setText("Address"));
-  searchList.append(TableViewColumn().setText("Value"));
+  searchList.append(TableViewColumn().setText("地址"));
+  searchList.append(TableViewColumn().setText("数值"));
 
   for(auto& candidate : candidates) {
     TableViewItem item{&searchList};

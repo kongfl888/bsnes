@@ -29,15 +29,16 @@ using namespace nall;
 
 namespace Emulator {
   static const string Name      = "bsnes";
-  static const string Version   = "115";
-  static const string Copyright = "bsnes team";
+  static const string Version   = "2026.115";
+  static const string Copyright = "bsnes team,brainthinks,HeatXD";
+  static const string Translator = "kongfl888 (KsiteCN)";
   static const string License   = "GPLv3 or later";
   static const string Website   = "https://github.com/bsnes-emu/bsnes/";
 
   static const string NetplayVersion   = "3";
 
   //incremented only when serialization format changes
-  static const string SerializerVersion = "115.2";
+  static const string SerializerVersion = "2026.115.2";
 
   namespace Constants {
     namespace Colorburst {

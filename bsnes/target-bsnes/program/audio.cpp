@@ -1,4 +1,4 @@
-auto Program::updateAudioDriver(Window parent) -> void {
+﻿auto Program::updateAudioDriver(Window parent) -> void {
   auto changed = (bool)audio;
   audio.create(settings.audio.driver);
   audio.setContext(presentation.viewport.handle());
@@ -15,7 +15,7 @@ auto Program::updateAudioDriver(Window parent) -> void {
 
   if(!audio.ready()) {
     MessageDialog({
-      "Error: failed to initialize [", settings.audio.driver, "] audio driver."
+      "错误：初始化音频驱动 [", settings.audio.driver, "] 失败。"
     }).setAlignment(parent).error();
     settings.audio.driver = "None";
     return updateAudioDriver(parent);

@@ -12,6 +12,7 @@ struct AboutDialog {
   auto setName(const string& name = "") -> type&;
   auto setVersion(const string& version = "") -> type&;
   auto setWebsite(const string& website = "") -> type&;
+  auto setTranslator(const string& translator = "") -> type&;
   auto show() -> void;
 
 private:
@@ -25,6 +26,7 @@ private:
     sWindow relativeTo;
     string version;
     string website;
+    string translator;
   } state;
 };
 
