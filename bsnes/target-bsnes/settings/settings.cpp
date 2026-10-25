@@ -230,7 +230,7 @@ auto SettingsWindow::create() -> void {
   statusBar.setFont(Font().setBold());
 
   setTitle("Settings");
-  setSize({680_sx, 400_sy});
+  setSize({680_sx, 500_sy});
   setAlignment({0.0, 1.0});
   setDismissable();
 
