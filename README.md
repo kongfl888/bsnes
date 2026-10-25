@@ -1,3 +1,27 @@
+bsnes's fork
+===========
+
+This fork is [bsnes](https://github.com/bsnes-emu/bsnes) + [bsnes-hd-bt](https://github.com/brainthinks/bsnes-hd-bt) + [bsnes-netplay](https://github.com/HeatXD/bsnes-netplay)
+
+CRediT
+
+bsnes-team
+acts-1631
+brainthinks
+HeatXD
+
+
+bsnes-netplay
+===========
+
+Note: This project is still a work in progress!
+
+A custom build of the bsnes emulator, integrated with GekkoNet, to provide robust and low-latency netplay capabilities.
+
+Currently, it supports sessions up to 5 players. Port forwarding (or another solution, such as a VPN that simulates a Local-Area Network) might be required.
+
+Spectating is also supported, also through direct connection. Other connection methods are currently in the works.
+
 bsnes-hd-bt
 ===========
 
