@@ -1,10 +1,9 @@
-name: Build
+name: Build-M
 on:
   push:
-    branches: [ master ]
-    tags: [ 'v*' ]
+    branches: [ merge ]
   pull_request:
-    branches: [ master ]
+    branches: [ merge ]
 permissions:
   contents: write
 jobs:
