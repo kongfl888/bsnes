@@ -176,7 +176,30 @@ auto Presentation::create() -> void {
   cheatEditor.setIcon(Icon::Edit::Replace).setText("Cheat Editor ...").onActivate([&] { toolsWindow.show(1); });
   stateManager.setIcon(Icon::Application::FileManager).setText("State Manager ...").onActivate([&] { toolsWindow.show(2); });
   manifestViewer.setIcon(Icon::Emblem::Text).setText("Manifest Viewer ...").onActivate([&] { toolsWindow.show(3); });
-
+  netplayMenu.setText(tr("Netplay")).setVisible(false);
+  setupNetplay.setIcon(Icon::Device::Network).setText({tr("Setup")}).onActivate([&] {
+    if(program.netplay.mode != Program::Netplay::Inactive) {
+      MessageDialog("Please stop netplay before setting up a new session.")
+      .setTitle("Netplay Setup")
+      .setAlignment(*this)
+      .warning();
+      return;
+    }
+    netplayWindow.show();
+  });
+  stopNetplay.setIcon(Icon::Prompt::Question).setText({tr("Stop")}).onActivate([&] {
+    program.netplayStop();
+  });
+  stressNetplay.setIcon(Icon::Action::Refresh).setText({tr("Desync Stress Test")}).onActivate([&] {
+    if(program.netplay.mode != Program::Netplay::Inactive) {
+      MessageDialog("Please stop netplay before starting a desync stress test.")
+      .setTitle("Netplay")
+      .setAlignment(*this)
+      .warning();
+      return;
+    }
+    program.netplayStressStart(2, 8);
+  });
   helpMenu.setText(tr("Help"));
   aboutSameBoy.setIcon(Icon::Prompt::Question).setText({tr("About SameBoy"), " ..."}).onActivate([&] {
     AboutDialog()
@@ -253,7 +276,7 @@ auto Presentation::create() -> void {
     program.quit();
   });
 
-  setTitle({"bsnes v", Emulator::Version});
+  setTitle({"bsnes v", Emulator::Version, " - netplay v", Emulator::NetplayVersion});
   resizeWindow();
   setAlignment(Alignment::Center);
 

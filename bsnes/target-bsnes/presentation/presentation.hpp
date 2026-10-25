@@ -117,6 +117,10 @@ struct Presentation : Window {
       MenuItem cheatEditor{&toolsMenu};
       MenuItem stateManager{&toolsMenu};
       MenuItem manifestViewer{&toolsMenu};
+    Menu netplayMenu{&menuBar};
+        MenuItem setupNetplay{&netplayMenu};
+        MenuItem stopNetplay{&netplayMenu};
+        MenuItem stressNetplay{&netplayMenu};
     Menu helpMenu{&menuBar};
       MenuItem aboutSameBoy{&helpMenu};
       MenuItem aboutBsnes{&helpMenu};
